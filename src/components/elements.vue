@@ -24,11 +24,15 @@ export default {
       groups: [
         {title: "APLSYS", data: [
           {title: "STOCK_NO"},
-          {title: "STR_NAME"}
+          {title: "STR_NAME"},
         ]},
         {title: "POS_H", data: []},
         {title: "POS_I", data: []},
         {title: "付款別", data: []},
+        {title: "全域", data: [
+          {title: "Space"},
+          {title: "NLine"},
+        ]},
       ], 
       cursor: 0
     }
