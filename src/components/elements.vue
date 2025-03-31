@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { nextTick, inject } from 'vue';
+
 export default {
   name: '',
   components: {
@@ -34,20 +36,26 @@ export default {
           {title: "NLine"},
         ]},
       ], 
-      cursor: 0
+      cursor: 0,
+      platform: ""
     }
   },
   created() {
     console.clear();
   },
   async mounted() {
-
+    this.platform = inject('platform');
   },
   unmounted() {
   },
   methods: {
   },
   computed: {
+  },
+  watch: {
+    platform(val) {
+      console.log("wahtch: "  + val);
+    }
   }
 }
 </script>

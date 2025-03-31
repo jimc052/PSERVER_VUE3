@@ -1,5 +1,11 @@
 <template>
-  <div id="header"></div>
+  <div id="header">
+    <div style="flex: 1;"></div>
+      <RadioGroup v-model="platform" type="button"  button-style="solid" @on-change="changePlatform">
+        <Radio label="JabezPOS"></Radio>
+        <Radio label="newPOS"></Radio>
+      </RadioGroup>
+  </div>
   <div id="section">
     <Elements />
     <SecondWin />
@@ -8,6 +14,7 @@
 </template>
 
 <script>
+import { ref, provide } from 'vue';
 import Elements from './components/elements.vue';
 import SecondWin from './components/secondWin.vue';
 
@@ -18,17 +25,24 @@ export default {
   },
   data () {
     return {
+      platform: "JabezPOS"
     }
   },
   created(){
     console.clear();
+    provide('platform', this.platform);
 	},
 	async mounted() {
-  
+    
   },
 	unmounted() {
   },
   methods: {
+    changePlatform: (val) => {
+      // console.log("changePlatform: " + val);
+      // provide('layout', this.platform);
+      // this.platform = val;
+    }
   },
   computed: {
   }
@@ -37,7 +51,11 @@ export default {
 
 <style scoped>
 #header, #footer {
-  min-height: 30px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
 }
 #header {
   border-bottom: 1px solid #eee;
