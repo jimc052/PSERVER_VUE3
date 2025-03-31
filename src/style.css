@@ -1,4 +1,9 @@
-/* :root {
+ :root {
+  --background1: rgb(81, 90, 110);
+  --color1: rgba(255, 255, 255, 0.85);
+  --background2: #363e4f;
+  --color2: rgba(255, 255, 255, 0.5);
+  /*
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -11,7 +16,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-} */
+  */
+} 
 
 html, body {
 	margin: 0;

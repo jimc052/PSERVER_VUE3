@@ -28,7 +28,7 @@ export default {
     }
   },
   created() {
-    console.clear();
+    // console.clear();
   },
   async mounted() {
 

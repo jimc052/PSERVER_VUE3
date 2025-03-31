@@ -40,8 +40,9 @@ export default {
       platform: ""
     }
   },
+  // inject: ['platform'],
   created() {
-    console.clear();
+    // console.clear();
   },
   async mounted() {
     this.platform = inject('platform');
@@ -54,7 +55,7 @@ export default {
   },
   watch: {
     platform(val) {
-      console.log("wahtch: "  + val);
+      console.log("wahtch.platform: "  + val);
     }
   }
 }
@@ -78,8 +79,8 @@ export default {
   align-items: center;
   cursor: pointer;
   user-select: none;
-  color: rgba(255, 255, 255, 0.85);
-  background-color: rgb(81, 90, 110);
+  color: var(--color1);
+  background-color: var(--background1);
 }
 .group-list {
   flex: 1;
@@ -89,7 +90,8 @@ export default {
 .detail-list {
   flex: 1;
   border-bottom: 1px solid #eee;
-  background: #363e4f;
+  background: var(--background2);
+  color: var(--color2);
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -99,7 +101,6 @@ export default {
   font-size: 18px;
   user-select: none;
   cursor: grab;
-  color: rgba(255, 255, 255, 0.5);
 }
 div.detail + div.detail {
   /* padding-top: 0; */
