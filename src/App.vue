@@ -18,7 +18,7 @@ import { ref, provide } from 'vue';
 import Elements from './components/elements.vue';
 import SecondWin from './components/secondWin.vue';
 
-let _platform = "JabezPOS";
+let _platform, _resize;
 
 export default {
   name: '',
@@ -27,31 +27,28 @@ export default {
   },
   data () {
     return {
-      platform: "",
-      resize: 0
+      platform: "JabezPOS",
     }
   },
   created(){
-    // console.clear();
+    _platform = ref(this.platform);
     provide('platform', _platform);
-    this.platform = _platform;
-    console.log(this.platform)
 
-    provide('resize', this.resize);
+    _resize = ref(0);
+    provide('resize', _resize);
 	},
 	async mounted() {
     window.onresize = () => {
       return (() => {
-        this.resize = document.body.clientHeight;
-        console.log(this.resize)
+        _resize.value = document.body.clientHeight;
       })()
     }
   },
 	unmounted() {
   },
   methods: {
-    changePlatform: (val) => { // 還沒寫
-      // console.log("changePlatform: " + val);
+    changePlatform(val) { // 還沒寫
+      _platform.value = val;
     }
   },
   computed: {

@@ -5,9 +5,11 @@
         <div style="flex: 1">{{el.title}}</div>
         <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
       </div>
-      <div v-if="index == cursor" class="detail-list">
-        <div v-for="(el2, index2) in el.data" :key="index2"  class="detail">
-          {{el2.title}}
+      <div ref="detailFame"  style="flex: 1">
+        <div v-if="index == cursor" class="detail-list" ref="detailList">
+          <div v-for="(el2, index2) in el.data" :key="index2"  class="detail">
+            {{el2.title}}
+          </div>
         </div>
       </div>
     </div>
@@ -16,6 +18,7 @@
 
 <script>
 import { nextTick, inject } from 'vue';
+let timeId;
 
 export default {
   name: '',
@@ -27,6 +30,9 @@ export default {
         {title: "APLSYS", data: [
           {title: "STOCK_NO"},
           {title: "STR_NAME"},
+          {title: "ADDRESS"},
+          {title: "TEL"},
+          {title: "COMP_CODE"},
         ]},
         {title: "POS_H", data: []},
         {title: "POS_I", data: []},
@@ -37,25 +43,45 @@ export default {
         ]},
       ], 
       cursor: 0,
-      platform: ""
+      platform: "",
+      resize: 0
     }
   },
-  // inject: ['platform'],
   created() {
     // console.clear();
   },
   async mounted() {
     this.platform = inject('platform');
+    this.resize = inject('resize');
+    await nextTick();
+    setTimeout(() => {
+      this.onResize();
+    }, 1000);
   },
   unmounted() {
   },
   methods: {
+    onResize() {
+      let el = this.$refs.detailList;
+      console.log(el);
+      // el.style.display = "none";
+      // clearTimeout(timeId);
+
+      // timeId = setTimeout(() => {
+      //   el.style.height = el.parentNode.clientHeight + "px";
+      //   el.style.display = "block";        
+      // }, 300);
+    }
   },
   computed: {
   },
   watch: {
     platform(val) {
       console.log("wahtch.platform: "  + val);
+    },
+    resize(val) {
+      // console.log("watch.resize: " + val);
+      this.onResize();
     }
   }
 }

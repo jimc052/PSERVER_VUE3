@@ -16,6 +16,7 @@
 
 <script>
 import { nextTick, inject } from 'vue';
+let timeId;
 
 export default {
   name: '',
@@ -35,7 +36,14 @@ export default {
   unmounted() {},
   methods: {
     onResize() {
-      console.log("this.resize")
+      let el = this.$refs.tableFrame;
+      el.style.display = "none";
+      clearTimeout(timeId);
+
+      timeId = setTimeout(() => {
+        el.style.height = el.parentNode.clientHeight + "px";
+        el.style.display = "block";
+      }, 300);
     }
   },
   computed: {
@@ -43,7 +51,7 @@ export default {
   },
   watch: {
     resize(val) {
-      console.log("watch.resize: " + val);
+      // console.log("watch.resize: " + val);
       this.onResize();
     }
   }
@@ -74,7 +82,7 @@ export default {
 
 .table-frame {
   height: 100%; /* 现在这会起作用，因为 .section 有了高度 */
-  overflow-y: hidden; /* 当内容超出高度时，启用滚动条 */
+  overflow-y: auto; /* 当内容超出高度时，启用滚动条 */
 }
 
 table {
