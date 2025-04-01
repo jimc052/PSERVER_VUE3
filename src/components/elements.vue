@@ -1,13 +1,13 @@
 <template>
-  <div id="menu-frame">
+  <div id="menu-frame"  ref="menuFrame">
     <div v-for="(el, index) in groups" :key="index" :class="{'group-list': index == cursor}">
       <div class="group" @mousedown="cursor = index">
         <div style="flex: 1">{{el.title}}</div>
         <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
       </div>
-      <div ref="detailFame"  style="flex: 1">
-        <div v-if="index == cursor" class="detail-list" ref="detailList">
-          <div v-for="(el2, index2) in el.data" :key="index2"  class="detail">
+      <div v-if="index == cursor" ref="detailFame" style="flex: 1; background: var(--background2)">
+        <div class="detail-list" ref="detailList">
+          <div v-for="(el2, index2) in el.data" :key="index2" class="detail">
             {{el2.title}}
           </div>
         </div>
@@ -34,8 +34,22 @@ export default {
           {title: "TEL"},
           {title: "COMP_CODE"},
         ]},
-        {title: "POS_H", data: []},
-        {title: "POS_I", data: []},
+        {title: "POS_H", data: [
+          {title: "T_DAY"},
+          {title: "T_SER_NO"},
+          {title: "T_VIP"},
+          {title: "T_OD"},
+          {title: "IN_AMT"},
+          {title: "CHG_AMT"},
+        ]},
+        {title: "POS_I", data: [
+          {title: "PLU_CODE"},
+          {title: "PLU_NAME"},
+          {title: "PRICE"},
+          {title: "CNT"},
+          {title: "TOTAL"},
+          {title: "TASK_NM"},
+        ]},
         {title: "付款別", data: []},
         {title: "全域", data: [
           {title: "Space"},
@@ -53,24 +67,22 @@ export default {
   async mounted() {
     this.platform = inject('platform');
     this.resize = inject('resize');
-    await nextTick();
-    setTimeout(() => {
-      this.onResize();
-    }, 1000);
+    this.onResize();
   },
   unmounted() {
   },
   methods: {
-    onResize() {
-      let el = this.$refs.detailList;
-      console.log(el);
-      // el.style.display = "none";
-      // clearTimeout(timeId);
-
-      // timeId = setTimeout(() => {
-      //   el.style.height = el.parentNode.clientHeight + "px";
-      //   el.style.display = "block";        
-      // }, 300);
+    async onResize() {
+      await nextTick();
+      let el = document.querySelector(".detail-list");
+      if(el) {
+        el.style.display = "none";
+        clearTimeout(timeId);
+        timeId = setTimeout(() => {
+          el.style.height = el.parentNode.clientHeight + "px";
+          el.style.display = "block";        
+        }, 100);          
+      }
     }
   },
   computed: {
@@ -81,6 +93,10 @@ export default {
     },
     resize(val) {
       // console.log("watch.resize: " + val);
+      this.onResize();
+    },
+    cursor(val) {
+      console.log("cursor: " + val);
       this.onResize();
     }
   }
@@ -121,7 +137,6 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
 }
-
 .detail {
   padding: 10px 10px;
   font-size: 18px;
@@ -129,8 +144,9 @@ export default {
   cursor: grab;
 }
 div.detail + div.detail {
-  /* padding-top: 0; */
   border-top: 1px solid #eee;
 }
-
+div.detail:nth-last-child(1) {
+  border-bottom: 1px solid #eee;
+}
 </style>

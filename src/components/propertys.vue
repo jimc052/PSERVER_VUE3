@@ -6,6 +6,7 @@
         <table>
           <tr v-for="n in 30" :key="n">
             <td>{{ n }}</td>
+            <td>{{ n }}</td>
           </tr>
         </table>
       </div>
@@ -90,10 +91,23 @@ table {
   font-size: 18px;
   border-collapse: collapse; /* 可选：使表格边框更整洁 */
 }
+tr {
+  color: var(--color2);
+  background-color: var(--background2);
+}
+tr > td:nth-child(1) {
+  text-align: right;
+  border-right: 1px solid #eee;
+}
+
+td {
+  border-bottom: 1px solid #eee;
+  padding: 5px 5px;
+}
 
 .footer {
-  color: rgba(255, 255, 255, 0.85);
-  background-color: rgb(81, 90, 110);
+  color: var(--color1);
+  background-color: var(--background1);
   height: 40px;
 }
 </style>
