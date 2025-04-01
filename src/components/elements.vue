@@ -50,7 +50,11 @@ export default {
           {title: "TOTAL"},
           {title: "TASK_NM"},
         ]},
-        {title: "付款別", data: []},
+        {title: "付款別", data: [
+          {title: "PAD_NAC"},
+          {title: "PAD_SNO"},
+          {title: "PAD_AMT"},
+        ]},
         {title: "全域", data: [
           {title: "Space"},
           {title: "NLine"},
@@ -63,6 +67,7 @@ export default {
   },
   created() {
     // console.clear();
+    // P#[PAD_NAC:ab=12][PAD_SNO:fc=********;Cpy=13,16;ab=16][PAD_AMT:af=14]
   },
   async mounted() {
     this.platform = inject('platform');
