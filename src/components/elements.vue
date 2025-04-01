@@ -1,12 +1,12 @@
 <template>
-  <div id="menu-frame"  ref="menuFrame">
+  <div id="menu-frame" style="background: var(--background2)">
     <div v-for="(el, index) in groups" :key="index" :class="{'group-list': index == cursor}">
-      <div class="group" @mousedown="cursor = index">
+      <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
         <div style="flex: 1">{{el.title}}</div>
         <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
       </div>
-      <div v-if="index == cursor" ref="detailFame" style="flex: 1; background: var(--background2)">
-        <div class="detail-list" ref="detailList">
+      <div v-if="index == cursor" style="flex: 1;">
+        <div class="detail-list">
           <div v-for="(el2, index2) in el.data" :key="index2" class="detail">
             {{el2.title}}
           </div>
