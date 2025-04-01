@@ -4,8 +4,10 @@ import App from './App.vue'
 
 import ViewUIPlus from 'view-ui-plus'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
+import mitt from "mitt"
 
 const app = createApp(App)
+app.config.globalProperties.$mybus = mitt()
 
 // app.use(createPinia())
 // app.use(router)

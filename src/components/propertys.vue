@@ -17,6 +17,7 @@
 
 <script>
 import { nextTick, inject } from 'vue';
+
 let timeId;
 
 export default {
@@ -31,6 +32,9 @@ export default {
     // console.clear();
   },
   async mounted() {
+    this.$mybus.on('cursor', e => {
+      console.log('cursor', e);
+    })
     this.resize = inject('resize');
     this.onResize();
   },

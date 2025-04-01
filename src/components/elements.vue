@@ -103,6 +103,7 @@ export default {
     cursor(val) {
       console.log("cursor: " + val);
       this.onResize();
+      this.$mybus.emit('cursor', { a: 'b' })
     }
   }
 }

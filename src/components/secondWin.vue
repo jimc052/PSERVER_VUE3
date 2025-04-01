@@ -2,9 +2,15 @@
  <splitpanes class="default-theme">
   <pane min-size="60" max-size="80">
     <splitpanes horizontal>
-      <pane min-size="10">2</pane>
-      <pane min-size="10">3</pane>
-      <pane min-size="20">4</pane>
+      <pane min-size="10">
+
+      </pane>
+      <pane min-size="10">
+
+      </pane>
+      <pane min-size="20">
+        
+      </pane>
     </splitpanes>
   </pane>
   <pane>
@@ -31,7 +37,9 @@ export default {
     // console.clear();
   },
   async mounted() {
-
+    this.$mybus.on('dragStart', e => {
+      console.log(e);
+    })
   },
   unmounted() {
   },
