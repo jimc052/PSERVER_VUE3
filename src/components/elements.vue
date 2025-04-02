@@ -7,7 +7,8 @@
       </div>
       <div v-if="index == cursor" style="flex: 1;">
         <div class="detail-list">
-          <div v-for="(el2, index2) in el.data" :key="index2" class="detail">
+          <div v-for="(el2, index2) in el.data" :key="index2" class="detail" draggable="true" 
+            @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
             {{el2.title}}
           </div>
         </div>
@@ -93,6 +94,13 @@ export default {
           el.style.display = "block";        
         }, 100);          
       }
+    },
+    dragStart(event, item) {
+      event.dataTransfer.effectAllowed = "copy";
+      event.dataTransfer.setData("text/plain", JSON.stringify(item));
+    },
+    dragEnd(event, item) {
+      
     }
   },
   computed: {

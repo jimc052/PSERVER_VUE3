@@ -3,11 +3,13 @@
   <pane min-size="60" max-size="80">
     <splitpanes horizontal>
       <pane min-size="10">
-
+        <DropZone zone="header" />
       </pane>
+
       <pane min-size="10">
-
+        <DropZone  />
       </pane>
+      
       <pane min-size="20">
         
       </pane>
@@ -22,12 +24,13 @@
 <script>
 import Propertys from "./propertys.vue";
 import { Splitpanes, Pane } from 'splitpanes'; // npm i splitpanes;  https://antoniandre.github.io/splitpanes/
-import 'splitpanes/dist/splitpanes.css'
+import 'splitpanes/dist/splitpanes.css';
+import DropZone from "./dropZone.vue";
 
 export default {
   name: '',
   components: {
-    Splitpanes, Pane, Propertys
+    Splitpanes, Pane, Propertys, DropZone
   },
   data() {
     return {
