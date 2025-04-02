@@ -27,14 +27,16 @@ export default {
   data() {
     return {
       groups: [
-        {title: "APLSYS", data: [
+        {title: "機台資料", data: [
           {title: "STOCK_NO"},
-          {title: "STR_NAME"},
+          {title: "STR_NAME", tag: "STORE_NAME"},
           {title: "ADDRESS"},
           {title: "TEL"},
           {title: "COMP_CODE"},
+          {title: "TM_NO"},
+          {title: "TM_NAME"},
         ]},
-        {title: "POS_H", data: [
+        {title: "交易主檔", data: [
           {title: "T_DAY"},
           {title: "T_SER_NO"},
           {title: "T_VIP"},
@@ -42,7 +44,7 @@ export default {
           {title: "IN_AMT"},
           {title: "CHG_AMT"},
         ]},
-        {title: "POS_I", data: [
+        {title: "交易明細", data: [
           {title: "PLU_CODE"},
           {title: "PLU_NAME"},
           {title: "PRICE"},

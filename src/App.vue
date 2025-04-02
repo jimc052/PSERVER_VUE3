@@ -29,7 +29,6 @@ export default {
     }
   },
   created(){
-    
 	},
 	async mounted() {
     this.$mybus.emit('platform', this.platform);
