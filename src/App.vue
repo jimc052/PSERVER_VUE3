@@ -18,8 +18,6 @@ import { ref, provide } from 'vue';
 import Elements from './components/elements.vue';
 import SecondWin from './components/secondWin.vue';
 
-let _platform, _resize;
-
 export default {
   name: '',
   components: {
@@ -31,24 +29,21 @@ export default {
     }
   },
   created(){
-    _platform = ref(this.platform);
-    provide('platform', _platform);
-
-    _resize = ref(0);
-    provide('resize', _resize);
+    
 	},
 	async mounted() {
+    this.$mybus.emit('platform', this.platform);
     window.onresize = () => {
       return (() => {
-        _resize.value = document.body.clientHeight;
+        this.$mybus.emit('resize', { hight: document.body.clientHeight, width: document.body.clientWidth });
       })()
     }
   },
 	unmounted() {
   },
   methods: {
-    changePlatform(val) { // 還沒寫
-      _platform.value = val;
+    changePlatform(val) {
+      this.$mybus.emit('platform', val);
     }
   },
   computed: {

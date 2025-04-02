@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import { nextTick, inject } from 'vue';
-
 let timeId;
 
 export default {
@@ -32,33 +30,29 @@ export default {
     // console.clear();
   },
   async mounted() {
-    this.$mybus.on('cursor', e => {
-      console.log('cursor', e);
+    this.$mybus.on('resize', e => {
+      this.onResize();
     })
-    this.resize = inject('resize');
     this.onResize();
   },
   unmounted() {},
   methods: {
     onResize() {
       let el = this.$refs.tableFrame;
-      el.style.display = "none";
+      if(!el) return;
       clearTimeout(timeId);
 
+      el.style.display = "none";
       timeId = setTimeout(() => {
         el.style.height = el.parentNode.clientHeight + "px";
         el.style.display = "block";
-      }, 300);
+      }, 100);
     }
   },
   computed: {
 
   },
   watch: {
-    resize(val) {
-      // console.log("watch.resize: " + val);
-      this.onResize();
-    }
   }
 };
 </script>
@@ -68,6 +62,7 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: var(--background2);
 }
 
 .header {
@@ -79,21 +74,22 @@ export default {
 }
 
 .section {
-  flex: 1; /* 占据所有可用空间 */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 防止 section 溢出 */
+  overflow: hidden; 
 }
 
 .table-frame {
-  height: 100%; /* 现在这会起作用，因为 .section 有了高度 */
-  overflow-y: auto; /* 当内容超出高度时，启用滚动条 */
+  height: 100%;
+  overflow-y: auto;
+  
 }
 
 table {
   width: 100%;
   font-size: 18px;
-  border-collapse: collapse; /* 可选：使表格边框更整洁 */
+  border-collapse: collapse;
 }
 tr {
   color: var(--color2);

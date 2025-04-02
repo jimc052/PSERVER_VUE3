@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { nextTick, inject } from 'vue';
+import { nextTick, } from 'vue';
 let timeId;
 
 export default {
@@ -62,7 +62,6 @@ export default {
       ], 
       cursor: 0,
       platform: "",
-      resize: 0
     }
   },
   created() {
@@ -70,8 +69,12 @@ export default {
     // P#[PAD_NAC:ab=12][PAD_SNO:fc=********;Cpy=13,16;ab=16][PAD_AMT:af=14]
   },
   async mounted() {
-    this.platform = inject('platform');
-    this.resize = inject('resize');
+    this.$mybus.on('resize', e => {
+      this.onResize();
+    })
+    this.$mybus.on('platform', e => {
+      this.platform = e;
+    })
     this.onResize();
   },
   unmounted() {
@@ -94,16 +97,11 @@ export default {
   },
   watch: {
     platform(val) {
-      console.log("wahtch.platform: "  + val);
-    },
-    resize(val) {
-      // console.log("watch.resize: " + val);
-      this.onResize();
+      console.log("watch.platform: "  + val);
     },
     cursor(val) {
-      console.log("cursor: " + val);
       this.onResize();
-      this.$mybus.emit('cursor', { a: 'b' })
+      // this.$mybus.emit('cursor', val);
     }
   }
 }
