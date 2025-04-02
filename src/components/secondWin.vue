@@ -40,9 +40,6 @@ export default {
     // console.clear();
   },
   async mounted() {
-    this.$mybus.on('dragStart', e => {
-      console.log(e);
-    })
   },
   unmounted() {
   },

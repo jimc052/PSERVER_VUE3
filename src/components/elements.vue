@@ -81,6 +81,8 @@ export default {
     this.onResize();
   },
   unmounted() {
+    // this.$mybus.off('resize');
+    // this.$mybus.off('platform');
   },
   methods: {
     async onResize() {
@@ -98,9 +100,12 @@ export default {
     dragStart(event, item) {
       event.dataTransfer.effectAllowed = "copy";
       event.dataTransfer.setData("text/plain", JSON.stringify(item));
+      this.$mybus.emit('sourceDragStart', Object.assign({}, item));
+      // console.log(item);
+      console.log(item)
     },
     dragEnd(event, item) {
-      
+      this.$mybus.emit('sourceDragEnd', item);
     }
   },
   computed: {

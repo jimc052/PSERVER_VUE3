@@ -42,3 +42,10 @@ body {
   display: flex; 
   flex-direction: column;
 }
+
+[draggable="true"] {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}

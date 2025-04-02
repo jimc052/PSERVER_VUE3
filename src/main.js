@@ -13,11 +13,7 @@ app.config.productionTip = false;
 app.use(ViewUIPlus)
 { // 自定義的變數
   app.config.globalProperties.$mybus = mitt();
-  // app.config.globalProperties.$dictionrary = { 
-  //   STR_NAME: "STORE_NAME", // STR_NAME 是 APLSYS 的欄位，STORE_NAME 是消費單上的 tag 名稱
-  // }
-
-  app.config.globalProperties.$rowHeight = 90;
+  app.config.globalProperties.$cellHeight = 50;
   app.config.globalProperties.$cellWidth = 80;
   app.config.globalProperties.$cellGap = 10;
 }
