@@ -53,7 +53,7 @@ export default {
           {title: "TOTAL"},
           {title: "TASK_NM"},
         ]},
-        {title: "付款別", data: [
+        {title: "付款資料", data: [
           {title: "PAD_NAC"},
           {title: "PAD_SNO"},
           {title: "PAD_AMT"},
@@ -99,10 +99,8 @@ export default {
     },
     dragStart(event, item) {
       event.dataTransfer.effectAllowed = "copy";
-      event.dataTransfer.setData("text/plain", JSON.stringify(item));
+      // event.dataTransfer.setData("text/plain", this.groups[this.cursor].title);
       this.$mybus.emit('sourceDragStart', Object.assign({}, item));
-      // console.log(item);
-      console.log(item)
     },
     dragEnd(event, item) {
       this.$mybus.emit('sourceDragEnd', item);
@@ -116,7 +114,7 @@ export default {
     },
     cursor(val) {
       this.onResize();
-      // this.$mybus.emit('cursor', val);
+      this.$mybus.emit('group', this.cursor == -1 ? "" : this.groups[this.cursor].title);
     }
   }
 }

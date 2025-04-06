@@ -34,6 +34,9 @@ export default {
       this.onResize();
     })
     this.onResize();
+    this.$mybus.on("item", e => {
+      console.log(e)
+    })
   },
   unmounted() {},
   methods: {

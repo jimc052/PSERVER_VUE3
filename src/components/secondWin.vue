@@ -1,5 +1,5 @@
 <template>
- <splitpanes class="default-theme">
+ <splitpanes class="default-theme" style="margin-left: 5px;">
   <pane min-size="60" max-size="80">
     <splitpanes horizontal>
       <pane min-size="10">
@@ -7,11 +7,13 @@
       </pane>
 
       <pane min-size="10">
-        <DropZone  />
+        <DropZone group="交易明細"  />
       </pane>
       
       <pane min-size="20">
-        
+        <div><DropZone zone="footer1" /></div>
+        <DropZone group="付款資料" />
+        <div><DropZone zone="footer2" /></div>
       </pane>
     </splitpanes>
   </pane>

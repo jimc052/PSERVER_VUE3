@@ -19,11 +19,19 @@
 export default {
   name: '',
   components: {},
+  props: {
+		group: {
+			type: String,
+			// require: true, 
+			default: "" 
+		},
+  },
   data() {
     return {
       items: [
       ],
       draggedItem: null,
+      _group: ""
     };
   },
   created() {
@@ -36,6 +44,10 @@ export default {
       // console.log(e)
       this.draggedItem = e;
     });
+    this.$mybus.on('group', e => {
+      this._group = e;
+      console.log(e)
+    });
   },
   unmounted() {},
   methods: {
@@ -44,7 +56,8 @@ export default {
     },
     dragOverZone(event) {
       event.preventDefault();
-      // event.dataTransfer.dropEffect = "none";// 不允許放置
+      if(this.group.length > 0 && this.group != this._group)
+        event.dataTransfer.dropEffect = "none";// 不允許放置
     },
     dropZone(event) {
       let data = event.dataTransfer.getData("text/plain");
@@ -54,7 +67,9 @@ export default {
         const left = event.clientX - rect.left;
         // console.log("dropZone: " + this.items.indexOf(this.draggedItem))
         if (this.items.indexOf(this.draggedItem) == -1) {
-          this.items.push(this.draggedItem)
+          this.draggedItem.id = Date.now();
+          this.items.push(this.draggedItem);
+          // this.$mybus.emit('item', "this.draggedItem");
         }
         this.draggedItem.top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
         this.draggedItem.left = Math.floor(left / 150) * 150;
