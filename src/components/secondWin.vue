@@ -3,17 +3,17 @@
   <pane min-size="60" max-size="80">
     <splitpanes horizontal>
       <pane min-size="10">
-        <DropZone zone="header" />
+        <DropZone />
       </pane>
 
       <pane min-size="10">
         <DropZone group="交易明細"  />
       </pane>
       
-      <pane min-size="20">
-        <div><DropZone zone="footer1" /></div>
-        <DropZone group="付款資料" />
-        <div><DropZone zone="footer2" /></div>
+      <pane min-size="20" style="display: flex; flex-direction: column;">
+        <div style="flex: 1;"><DropZone /></div>
+        <DropZone group="付款資料" style="border: 1px solid red; height: 40px;" />
+        <div style="flex: 1;"><DropZone /></div>
       </pane>
     </splitpanes>
   </pane>

@@ -26,48 +26,62 @@ app.use(ViewUIPlus)
     },
     default: {
       sz: {
-        title: "長度",
-        placeholder: "請輸入數字"
+        title: "字體大小",
+        placeholder: "請選擇",
+        options: [
+          { value: 1, label: "1 * 1" },
+          { value: 2, label: "2 * 2" },
+          { value: 3, label: "3 * 3" },
+          { value: 4, label: "2 * 1" },
+          { value: 5, label: "1 * 2" }
+        ]
       },
       al: {
         title: "對齊",
-        // placeholder: "0: 靠左, 1: 靠中, 2: 靠右",
+        placeholder: "請選擇",
         options: [
           { value: 0, label: "靠左" },
           { value: 1, label: "靠中" },
           { value: 2, label: "靠右" }
         ]
       },
-      ab: {
-        title: "後置空白",
+      Len: {
+        title: "字串長度",
         placeholder: "請輸入數字"
       },
       af: {
         title: "前置空白",
         placeholder: "請輸入數字",
-        
-      }, 
+      },
+      ab: {
+        title: "後置空白",
+        placeholder: "請輸入數字"
+      },
       fc: {
         title: "前置碼",
-        cols: 2,
-        placeholder1: "請輸入文字",
-        placeholder2: "請輸入數字"
+        placeholder: "請輸入文字",
       }, 
       gc: {
         title: "後置碼",
-        cols: 2,
-        placeholder1: "請輸入文字",
-        placeholder2: "請輸入數字"
+        placeholder: "請輸入文字",
       },
       rp: {
         title: "重複字元",
+        placeholder: "請輸入數字"
+      },
+      Cpy: {
+        title: "擷取字串",
         cols: 2,
-        placeholder1: "請輸入文字",
-        placeholder2: "請輸入數字"
+        placeholder1: "請輸入開始位置",
+        placeholder2: "請輸入結束位置"
+      },
+      key: {
+        title: "群組鍵值",
+        placeholder: "請輸入口味加料",
+        limit: "TASK_NM"
       }
     }
   }
-
 }
 
 app.mount('#app')

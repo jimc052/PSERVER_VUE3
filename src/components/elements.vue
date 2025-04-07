@@ -39,6 +39,7 @@ export default {
           {title: "COMP_CODE"},
           {title: "TM_NO"},
           {title: "TM_NAME"},
+          {title: "CASH_NAME"}
         ]},
         {title: "交易主檔", data: [
           {title: "T_DAY"},
@@ -47,6 +48,7 @@ export default {
           {title: "T_OD"},
           {title: "IN_AMT"},
           {title: "CHG_AMT"},
+          {title: "AMOUNT"},
         ]},
         {title: "交易明細", data: [
           {title: "PLU_CODE"},
@@ -62,10 +64,19 @@ export default {
           {title: "PAD_AMT"},
         ]},
         {title: "其他", data: [
+          {title: "Titel"},
           {title: "Space"},
           {title: "N_LINES"},
           {title: "SUM_TOTAL"},
-          {title: ""},
+          {title: "TOT_CNT"},
+          {title: "SERVAMT"},
+          {title: "Date"},
+          {title: "Time"},
+          {title: "Count"},
+          {title: "+A_DES"},
+          {title: "-A_DES"},
+          {title: "Parper"},
+          {title: "OutgoBook"},
           {title: ""},
           {title: ""},
         ]},

@@ -2,24 +2,31 @@
   <div class="frame" ref="frame">
     <div class="header">{{(title.length > 0 ? title : "屬性設定")}}</div>
     <div class="section" ref="section">
-      <div class="table-frame" ref="tableFrame">
+      <div class="table-frame" ref="tableFrame" v-if="draggedItem != null">
         <table v-if="draggedItem">
           <tr v-for="(value, key, index) in draggedItem" :key="index">
             <td style="min-width: 85px;">{{ value.title }}</td>
             <td>
               <div v-if="typeof value.cols == 'number' " style="display: flex; flex-direction: row;">
-                <Input v-model="value.value"  :placeholder="value.placeholder1"  />
-                <Input style="margin-left: 5px;" v-model="value.value" :placeholder="value.placeholder2" />
+                <Input v-model="value.value1"  :placeholder="value.placeholder1" 
+                  @on-change="onChange(key, value, $event)"
+                />
+                <Input style="margin-left: 5px;" v-model="value.value2" :placeholder="value.placeholder2" 
+                  @on-change="onChange(key, value, $event)"
+                />
               </div>
 
-              <Select  v-else-if="Array.isArray(value.options)" v-model="value.value" style="width:200px">
+              <Select v-else-if="Array.isArray(value.options)" v-model="value.value" 
+                :placeholder="value.placeholder"
+                @on-change="onChange(key, value, $event)"
+              >
                   <Option v-for="item in value.options" :value="item.value" :key="item.value">
                     {{ item.label }}
                   </Option>
               </Select>
 
-
-              <Input v-else v-model="value.value" :placeholder="value.placeholder" />
+              <Input v-else v-model="value.value" :placeholder="value.placeholder"
+                @on-change="onChange(key, value, $event)" />
             </td>
           </tr>
         </table>
@@ -38,30 +45,36 @@ export default {
   data() {
     return {
       draggedItem: null,
-      title: ""
+      id: "", title: "",
+      platform: "",
+
     };
   },
   created() {
     // console.clear();
   },
   async mounted() {
+    this.$mybus.on('platform', e => {
+      this.platform = e;
+    })
+  
     this.$mybus.on('resize', e => {
       this.onResize();
     })
     this.onResize();
 
     this.$mybus.on("item", e => {
-      // this.draggedItem = e;
-      // console.log(e)
+      this.draggedItem = null;
       this.title = e.title;
-
+      this.id = e.id;
       if(typeof this.$properties[e.title] == "object") {
-        this.draggedItem = this.$properties[e.title]
+        this.draggedItem = Object.assign({}, this.$properties[e.title]);
       } else {
         this.draggedItem = Object.assign({}, this.$properties["default"]);
       }
-
-      console.log(this.draggedItem)
+      for(let key in this.draggedItem) {
+        this.draggedItem[key].value = typeof e[key] == "undefined" ? undefined : e[key];
+      }
     })
   },
   unmounted() {},
@@ -76,6 +89,10 @@ export default {
         el.style.height = el.parentNode.clientHeight + "px";
         el.style.display = "block";
       }, 100);
+    }, 
+    onChange(key, value, event) {
+      console.log(key)
+      console.log(value.value)
     }
   },
   computed: {
