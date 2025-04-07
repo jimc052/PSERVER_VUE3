@@ -19,9 +19,10 @@ app.use(ViewUIPlus)
 
   app.config.globalProperties.$properties = {
     N_LINES: {
-    },
-    Space: {
-
+      nl: {
+        title: "空白列",
+        placeholder: "請輸入數字"
+      },
     },
     default: {
       sz: {

@@ -7,9 +7,12 @@
       </div>
       <div v-if="index == cursor" style="flex: 1;">
         <div class="detail-list">
-          <div v-for="(el2, index2) in el.data" :key="index2" class="detail" draggable="true" 
-            @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
-            {{el2.title}}
+          <div v-for="(el2, index2) in el.data" :key="index2">
+            <div v-if="el2.title.length > 0" class="detail" 
+              draggable="true" 
+              @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
+              {{el2.title}}
+            </div>
           </div>
         </div>
       </div>
@@ -60,7 +63,11 @@ export default {
         ]},
         {title: "其他", data: [
           {title: "Space"},
-          {title: "NLine"},
+          {title: "N_LINES"},
+          {title: "SUM_TOTAL"},
+          {title: ""},
+          {title: ""},
+          {title: ""},
         ]},
       ], 
       cursor: 0,

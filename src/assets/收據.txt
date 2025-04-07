@@ -1,0 +1,32 @@
+H#
+[Check:sz=2;al=1]
+
+[STORE_NAME][#Space:ab=2]
+TEL:[TEL:sz=1]
+[#Date] [#Time]
+Order#:[T_SER_NO:Cpy=4,3]
+TM:TM[TM_NO:ab=8]Cashier:[CASH_NAME:Cpy=1,3]
+------------------------------------------
+[Item List:ab=30][Qty:ab=3][#Space:ab=1][Amt:af=7]
+------------------------------------------
+I#[MAIN:qrd=1;prc=0]
+[I#PC_NAME:Len=30;ab=26]x[#Space:ab=1][I#CNT:af=4][#Space:ab=2][I#TOTAL:af=8]
+  [I#TASK_NM]
+F#
+------------------------------------------
+Total[#Count:af=4] Items[#Space:ab=15][#TOT_CNT:af=8] Qty 
+------------------------------------------
+[#Space:ab=28]Subtotal :[SUM_TOTAL:af=7]
+[#Space:ab=28]Surcharge:[+A_DES:af=7]
+[#Space:ab=28]Discount :[-A_DES:ab=7]
+==========================================
+[#Space:ab=28]Grand Total:[H#AMOUNT:af=7]
+
+[#Space:ab=12]Tender:$[IN_AMT:af=6] [#Space:ab=4]Refund:$[CHG_AMT:af=4] 
+Payment Type：
+P#[PAD_NAC:ab=12][PAD_SNO:fc=********;Cpy=13,16;ab=16][PAD_AMT:af=14]
+[N_LINES:nl=2]
+
+[《《 Thank You for Your Patronage!》》:al=1]
+
+[N_LINES:nl=4]

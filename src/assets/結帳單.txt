@@ -1,0 +1,52 @@
+BEEP#
+H#
+[#PrnLogo]
+[結 帳 單 5.7 紙:sz=2;al=1]
+
+[STORE_NAME][#Space:ab=2]
+TEL:[TEL:sz=1]
+[#Date] [#Time]
+單號:[T_SER_NO:Cpy=4,3]
+機碼:TM[TM_NO:ab=8]收銀員:[CASH_NAME:Cpy=1,8]
+取單號碼:[T_SER_NO]
+取餐時間:[T_TIME]
+桌號:[T_TABLE]
+用餐方式:[T_FLAG6]
+聯絡人:[D_VIP_NAME:Cpy=1,10]
+連絡電話:[D_TEL1]
+地址:[D_MEMO]
+備註:[REMARK]
+註記:[T_OD]
+[*******會員資料**********]
+會員編號:   [T_VIP]
+會員姓名:   [VIP_NAME]
+會員電話:   [VIP_TEL1]
+前期點數: [PREPOINTS]
+本次交易累點: [ADDPOINTS]
+本次折抵點數: [MINUSPOINTS]
+累點剩餘點數: [NOWPOINTS]
+[***********************]
+--------------------------------
+[餐品名稱:ab=20][數量:ab=3][#Space:ab=1][金額:af=7]
+--------------------------------
+I#[MAIN:qrd=0;ord=0;prc=0]
+[I#PC_NAME:Len=16;ab=18]x[#Space:ab=1][I#CNT:af=4][#Space:ab=10][I#TOTAL:af=8]
+[<I#PRICE>*<I#CNT>:ar=0] 
+[I#PC_ENAME]
+  [I#TASK_NM]
+  [I#TAKE_OUT]
+F#
+--------------------------------
+共[#Count:af=4] 項[#Space:ab=7][#TOT_CNT:af=8] 件 
+--------------------------------
+[#Space:ab=18]小　計:[SUM_TOTAL:af=7]
+[#Space:ab=18]折　讓:[-A_DES:af=7]
+[#Space:ab=18]服務費:[SERVAMT:af=7] 
+================================
+[#Space:ab=18]總　計:[H#AMOUNT:af=7]
+
+[#Space:ab=2]收:[IN_AMT:af=6] 元[#Space:ab=4]找　零:[CHG_AMT:af=4] 元
+付款別：
+P#[#Space:ab=2][PAD_NAC:ab=12][PAD_SNO:fc=******;Cpy=13,4;ab=10][PAD_AMT:af=8]
+[N_LINES:nl=3]
+[《《 歡迎您再次光臨 》》:al=1]
