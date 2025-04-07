@@ -58,7 +58,7 @@ export default {
           {title: "PAD_SNO"},
           {title: "PAD_AMT"},
         ]},
-        {title: "全域", data: [
+        {title: "其他", data: [
           {title: "Space"},
           {title: "NLine"},
         ]},

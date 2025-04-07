@@ -1,12 +1,26 @@
 <template>
   <div class="frame" ref="frame">
-    <div class="header">屬性設定</div>
+    <div class="header">{{(title.length > 0 ? title : "屬性設定")}}</div>
     <div class="section" ref="section">
       <div class="table-frame" ref="tableFrame">
-        <table>
-          <tr v-for="n in 30" :key="n">
-            <td>{{ n }}</td>
-            <td>{{ n }}</td>
+        <table v-if="draggedItem">
+          <tr v-for="(value, key, index) in draggedItem" :key="index">
+            <td style="min-width: 85px;">{{ value.title }}</td>
+            <td>
+              <div v-if="typeof value.cols == 'number' " style="display: flex; flex-direction: row;">
+                <Input v-model="value.value"  :placeholder="value.placeholder1"  />
+                <Input style="margin-left: 5px;" v-model="value.value" :placeholder="value.placeholder2" />
+              </div>
+
+              <Select  v-else-if="Array.isArray(value.options)" v-model="value.value" style="width:200px">
+                  <Option v-for="item in value.options" :value="item.value" :key="item.value">
+                    {{ item.label }}
+                  </Option>
+              </Select>
+
+
+              <Input v-else v-model="value.value" :placeholder="value.placeholder" />
+            </td>
           </tr>
         </table>
       </div>
@@ -23,7 +37,8 @@ export default {
   components: {},
   data() {
     return {
-      resize: 0
+      draggedItem: null,
+      title: ""
     };
   },
   created() {
@@ -34,8 +49,19 @@ export default {
       this.onResize();
     })
     this.onResize();
+
     this.$mybus.on("item", e => {
-      console.log(e)
+      // this.draggedItem = e;
+      // console.log(e)
+      this.title = e.title;
+
+      if(typeof this.$properties[e.title] == "object") {
+        this.draggedItem = this.$properties[e.title]
+      } else {
+        this.draggedItem = Object.assign({}, this.$properties["default"]);
+      }
+
+      console.log(this.draggedItem)
     })
   },
   unmounted() {},
@@ -53,7 +79,6 @@ export default {
     }
   },
   computed: {
-
   },
   watch: {
   }
@@ -86,7 +111,6 @@ export default {
 .table-frame {
   height: 100%;
   overflow-y: auto;
-  
 }
 
 table {
