@@ -13,9 +13,9 @@ app.config.productionTip = false;
 app.use(ViewUIPlus)
 { // 自定義的變數
   app.config.globalProperties.$mybus = mitt();
-  app.config.globalProperties.$cellHeight = 50;
-  app.config.globalProperties.$cellWidth = 80;
-  app.config.globalProperties.$cellGap = 10;
+  app.config.globalProperties.$cellHeight = 40;
+  app.config.globalProperties.$cellWidth = 120;
+  app.config.globalProperties.$cellGap = 5;
 
   app.config.globalProperties.$properties = {
     N_LINES: {

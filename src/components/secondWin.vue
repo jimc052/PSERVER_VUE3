@@ -2,18 +2,22 @@
  <splitpanes class="default-theme" style="margin-left: 5px;">
   <pane min-size="60" max-size="80">
     <splitpanes horizontal>
-      <pane min-size="10">
-        <DropZone />
+      <pane min-size="5">
+        <DropZone zone="header" />
       </pane>
 
-      <pane min-size="10">
-        <DropZone group="交易明細"  />
+      <pane min-size="5">
+        <DropZone group="交易明細"   zone="detail" />
       </pane>
       
-      <pane min-size="20" style="display: flex; flex-direction: column;">
-        <div style="flex: 1;"><DropZone /></div>
-        <DropZone group="付款資料" style="border: 1px solid red; height: 40px;" />
-        <div style="flex: 1;"><DropZone /></div>
+      <pane min-size="40" style="display: flex; flex-direction: column; ">
+        <div style="flex: 1;"><DropZone zone="footer1" /></div>
+
+        <DropZone group="付款資料"  zone="payment"
+          style="border: 1px solid #2d8cf0; height: 40px; margin: 5px 0px;" 
+        />
+
+        <div style="flex: 1;"><DropZone zone="footer2" /></div>
       </pane>
     </splitpanes>
   </pane>

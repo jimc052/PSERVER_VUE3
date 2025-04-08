@@ -1,10 +1,17 @@
 <template>
   <div id="header">
-    <div style="flex: 1;"></div>
+    <div style="flex: 1;">
+      <Button type="success">上傳</Button>
+      <Button type="success" style="margin-left: 10px;">文字檔</Button>
+    </div>
+      <!-- <Button type="error">Error</Button> -->
+
       <RadioGroup v-model="platform" type="button"  button-style="solid" @on-change="changePlatform">
         <Radio label="JabezPOS"></Radio>
-        <Radio label="newPOS"></Radio>
+        <Radio label="new2POS"></Radio>
       </RadioGroup>
+
+      <Button type="warning" icon="md-trash" @click="onClickTrash" style="margin-left: 10px;"></Button>
   </div>
   <div id="section">
     <Elements />
@@ -41,6 +48,9 @@ export default {
 	unmounted() {
   },
   methods: {
+    onClickTrash() {
+      this.$mybus.emit('delAll');
+    },
     changePlatform(val) {
       this.$mybus.emit('platform', val);
     }
@@ -52,17 +62,21 @@ export default {
 
 <style scoped>
 #header, #footer {
-  min-height: 50px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px;
 }
 #header {
-  border-bottom: 1px solid #eee;
+  padding: 10px;
+  background-color: var(--background1);
+  border-bottom: 3px solid #eee;
 }
 #footer {
-  border-top: 1px solid #eee;
+  padding: 5px;
+  border-top: 3px solid #eee;
+  /* min-height: 50px; */
+  background-color: var(--background1);
+  color: var(--color1);
 }
 #section {
   flex: 1;

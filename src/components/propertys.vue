@@ -47,7 +47,6 @@ export default {
       draggedItem: null,
       id: "", title: "",
       platform: "",
-
     };
   },
   created() {
@@ -72,6 +71,10 @@ export default {
       } else {
         this.draggedItem = Object.assign({}, this.$properties["default"]);
       }
+      if(! (this.platform == "new2POS" && (e.title == "TASK_NM" || e.title == "PLU_NAME"))) {
+        delete this.draggedItem.key;
+      }
+
       for(let key in this.draggedItem) {
         this.draggedItem[key].value = typeof e[key] == "undefined" ? undefined : e[key];
       }
@@ -113,7 +116,7 @@ export default {
 .header {
   background-color: var(--background1);
   color: var(--color1);
-  padding: 10px 10px;
+  padding: 5px 0px;
   font-size: 20px;
   text-align: center;
 }

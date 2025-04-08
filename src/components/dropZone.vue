@@ -1,15 +1,19 @@
 <template>
-  <div class="container" ref="zone" @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone">
+  <div class="container" ref="zone" 
+    @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
+  >
     <div v-for="(el, index) in items" :key="index" draggable="true" 
         @dragstart="dragStartItem(index, el, $event)"
         @dragover="dragOverItem(index, el, $event)" 
         @dragenter="dragEnterItem(index, el, $event)"
         @dragleave="dragLeaveItem(index, el, $event)"
         v-on:click="clickItem(index, el, $event)"
-        class="item" 
+        class="item" :class="{ 'item-active': active == index }"
         :style="{
           top: el.top + 'px',
           left: el.left + 'px',
+          width: this.$cellWidth + 'px',
+          height: this.$cellHeight + 'px',
         }">
         {{ el.title }}
     </div>
@@ -26,6 +30,7 @@ export default {
 			// require: true, 
 			default: "" 
 		},
+    zone: ""
   },
   data() {
     return {
@@ -39,6 +44,7 @@ export default {
   created() {
   },
   async mounted() {
+    console.log(this.zone)
     this.$mybus.on('sourceDragEnd', e => {
       this.draggedItem = null;
     });
@@ -46,13 +52,18 @@ export default {
       this.draggedItem = e;
     });
     this.$mybus.on('group', e => {
-      this._group = e;
+      this._group = e; // "付款資料", "交易明細"
+    });
+    this.$mybus.on('delAll', e => {
+      this.items = [];
+      this.active = -1;
     });
   },
   unmounted() {},
   methods: {
     clickItem(index, item, e) {
       this.$mybus.emit('item', item);
+      this.active = index;
     },
     dragEnterZone(event) {
       event.preventDefault();
@@ -63,7 +74,6 @@ export default {
         event.dataTransfer.dropEffect = "none";// 不允許放置
     },
     dropZone(event) {
-      let data = event.dataTransfer.getData("text/plain");
       if (this.draggedItem) {
         let rect = this.$refs["zone"].getBoundingClientRect();
         const top = event.clientY - rect.top;
@@ -72,10 +82,11 @@ export default {
         if (this.items.indexOf(this.draggedItem) == -1) {
           this.draggedItem.id = Date.now();
           this.items.push(this.draggedItem);
+          this.active = this.items.length - 1;
         }
         this.$mybus.emit('item', this.draggedItem);
         this.draggedItem.top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
-        this.draggedItem.left = Math.floor(left / 150) * 150;
+        this.draggedItem.left = Math.floor(left / this.$cellWidth) * this.$cellWidth;
         this.draggedItem = null;
       }
     },
@@ -85,6 +96,7 @@ export default {
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("text/plain", item.text);
       }
+      this.active = index;
       this.draggedItem = item;
     },    
     dragOverItem(index, item, event) {
@@ -108,15 +120,16 @@ export default {
 <style scoped>
 .container {
   height: 100%;
-  background: var(--background1);
-  position: relative;
-  background-image: 
-    linear-gradient(to bottom, #eee 0px, #eee 1px, transparent 1px, transparent 50px),
-    linear-gradient(to right, #eee 0px, #eee 1px, transparent 1px, transparent 100%)
-    ;
-  background-size: 100% 50px;
+  background: var(--background2);
+  
+  background-image:
+    linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
+    linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
+  background-size: 20px 20px;
+
   overflow: hidden;
-  padding: 0px 10px;
+  padding: 0px 0px;
+  position: relative;
 }
 
 .item {
@@ -124,11 +137,17 @@ export default {
   border: 1px solid #999;
   padding: 5px;
   cursor: move;
-  width: 120px;
+  text-align: center;
+  vertical-align: middle;
   font-size: 16px;
-  color: var(--color1);
+  background-color: white;
 }
 .item-focus {
-  border: 1px solid red;
+  border: 1px dotted red;
+}
+.item-active {
+  /* border: 1px solid orangered; */
+  background-color: #2d8cf0;
+  color: white;
 }
 </style>
