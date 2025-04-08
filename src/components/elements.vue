@@ -2,7 +2,7 @@
   <div id="menu-frame" style="background: var(--background2)">
     <div v-for="(el, index) in groups" :key="index" :class="{'group-list': index == cursor}">
       <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
-        <div style="flex: 1">{{el.title}}</div>
+        <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
         <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
       </div>
       <div v-if="index == cursor" style="flex: 1;">
@@ -183,5 +183,10 @@ div.detail + div.detail {
 }
 div.detail:nth-last-child(1) {
   border-bottom: 1px solid #eee;
+}
+
+.title-active {
+  font-weight: 950;
+  color: white;
 }
 </style>
