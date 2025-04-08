@@ -1,0 +1,8 @@
+H#
+I#
+[T_SER_NO:Cpy=2,6][#Space:ab=10][Parper:af=7]/[COUNT]
+
+[I#PC_NAME:Len=36;sz=2;lw=6] 
+[#Space:ab=1][I#TASK_NM:sz=1;lw=30][#Space:ab=1][I#FEEDING_NM:sz=1;lw=30]
+[$:af=12;ab=2][I#PRICE_MORE][元:af=2]
+F#

@@ -1,10 +1,16 @@
 <template>
   <div id="header">
     <div style="flex: 1;">
-      <Button type="success" @click="onUpload">上傳</Button>
-      <Button type="success" @click="onOpenDialog" style="margin: 0 10px;">文字檔</Button>
+      <Button type="success" @click="onUpload" :disabled="itemCount > 0">上傳</Button>
+      <Button type="success" @click="onOpenDialog" style="margin: 0 10px;"
+       :disabled="itemCount == 0"
+      >
+        文字檔
+      </Button>
 
-      <Select placeholder="請選擇範本" @on-change="onChange" style="width: 100px;">
+      <Select placeholder="請選擇範本" @on-change="onChange" style="width: 100px;"
+        :disabled="itemCount > 0"
+      >
         <Option v-for="item in options" :value="item" :key="item">
           {{ item }}
         </Option>
@@ -12,18 +18,49 @@
 
       <input type="file" ref="fileInput" @change="onFileSelected" accept=".txt, text/plain" style="display: none;" />
     </div>
-      <!-- <Button type="error">Error</Button> -->
+    <!-- <Button type="error">Error</Button> -->
 
-      <RadioGroup v-model="platform" type="button"  button-style="solid" @on-change="changePlatform">
-        <Radio label="JabezPOS"></Radio>
-        <Radio label="new2POS"></Radio>
-      </RadioGroup>
+    <RadioGroup v-model="platform" type="button" button-style="solid" @on-change="changePlatform"
+     v-if="itemCount == 0"
+    >
+      <Radio label="JabezPOS"></Radio>
+      <Radio label="new2POS"></Radio>
+    </RadioGroup>
+    <div v-else style="color: var(--color1); font-size: 20px;">{{ platform }}</div>
 
-      <Button type="warning" icon="md-trash" @click="onClickTrash" style="margin-left: 10px;"></Button>
+    <Button type="warning" icon="md-trash" style="margin-left: 10px;"
+      @click="onClickTrash" :disabled="itemCount == 0" />
   </div>
   <div id="section">
     <Elements />
-    <SecondWin />
+    <splitpanes class="default-theme" style="margin-left: 5px;">
+      <pane min-size="60" max-size="80">
+        <splitpanes horizontal>
+          <pane min-size="5">
+            <DropZone zone="header" ref="header" />
+          </pane>
+
+          <pane min-size="5">
+            <DropZone group="交易明細" zone="detail" ref="detail" />
+          </pane>
+
+          <pane min-size="40" style="display: flex; flex-direction: column; ">
+            <div style="flex: 1;">
+              <DropZone zone="footer1" ref="footer1" />
+            </div>
+
+            <DropZone group="付款資料" zone="payment" ref="payment"
+              style="border: 1px solid #2d8cf0; height: 40px; margin: 2px 0px;" 
+            />
+
+            <div style="flex: 1;">
+              <DropZone zone="footer2" ref="footer2" />
+            </div>
+          </pane>
+        </splitpanes>
+      </pane>
+      <pane> <Propertys /> </pane>
+    </splitpanes>
   </div>
   <div id="footer"></div>
 </template>
@@ -31,38 +68,87 @@
 <script>
 import { ref, provide } from 'vue';
 import Elements from './components/elements.vue';
-import SecondWin from './components/secondWin.vue';
+import Propertys from "./components/propertys.vue";
+import DropZone from "./components/dropZone.vue";
+import { Splitpanes, Pane } from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
+// https://www.iviewui.com/components/modal
 
 export default {
   name: '',
   components: {
-    Elements, SecondWin
+    Elements, Splitpanes, Pane, Propertys, DropZone
   },
-  data () {
+  data() {
     return {
       platform: "JabezPOS",
       options: [
         "收據",
         "結帳單",
         "標籤"
-      ]
+      ],
+      itemCount: 0
     }
   },
-  created(){
-	},
-	async mounted() {
+  created() {
+  },
+  async mounted() {
     this.$mybus.emit('platform', this.platform);
     window.onresize = () => {
       return (() => {
         this.$mybus.emit('resize', { hight: document.body.clientHeight, width: document.body.clientWidth });
       })()
     }
+    this.$mybus.on("item", e => {
+      this.itemCount = 0;
+      let count = 0;
+      let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
+      arr.forEach(el => {
+        if(typeof el != "undefined" && typeof el.items == "object")
+          count += el.items.length;
+      });
+      
+      this.itemCount = count;
+    });
+
+    this.$mybus.on('delAll', e => {
+      this.itemCount = 0;
+    });
   },
-	unmounted() {
+  unmounted() {
   },
   methods: {
     onOpenDialog() {
-      
+      let width = document.body.clientWidth - 200;
+      let height = document.body.clientHeight - 250;
+      let content = "還沒寫";
+      this.$Modal.info({
+          // title: "Success",
+          width: width + 50,
+          render: (h) => {
+              return h('textarea', {
+                // class: ['button', { 'is-outlined': true }],
+                style: [{ 
+                    'font-size': '16px' 
+                  },  { 
+                    'width': width + 'px' 
+                  }, { 
+                    'height': height + 'px' 
+                  }, { 
+                    'background': '#eee' 
+                  // }, { 
+                  //   'color': 'var(--color1)' 
+                  }
+                ],
+                // id: 'submit',
+                value: content,
+                readonly: true
+                // innerHTML: '',
+                // onClick: submitForm,                
+              })
+          },
+          // onOk: () => { alert(`Hello, ${this.value}`)}
+      })
     },
     onUpload() {
       this.$refs.fileInput.click();
@@ -75,11 +161,10 @@ export default {
       }
 
       if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
-          alert('請選擇一個文字檔 (.txt)');
-          event.target.value = null;
-          return;
+        alert('請選擇一個文字檔 (.txt)');
+        event.target.value = null;
+        return;
       }
-
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -108,21 +193,35 @@ export default {
     }
   },
   computed: {
+    // itemCount() {
+    //   let count = 0;
+    //   // let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
+    //   // arr.forEach(el => {
+    //   //   console.log(el)
+    //   //   if(typeof el != "undefined" && typeof el.items == "object")
+    //   //     count += el.items.length;
+    //   // });
+      
+    //   return count;
+    // }
   }
 }
 </script>
 
 <style scoped>
-#header, #footer {
+#header,
+#footer {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
+
 #header {
   padding: 10px;
   background-color: var(--background1);
   border-bottom: 3px solid #eee;
 }
+
 #footer {
   padding: 5px;
   border-top: 3px solid #eee;
@@ -130,6 +229,7 @@ export default {
   background-color: var(--background1);
   color: var(--color1);
 }
+
 #section {
   flex: 1;
   display: flex;
