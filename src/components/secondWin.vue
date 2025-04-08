@@ -14,7 +14,7 @@
         <div style="flex: 1;"><DropZone zone="footer1" /></div>
 
         <DropZone group="付款資料"  zone="payment"
-          style="border: 1px solid #2d8cf0; height: 40px; margin: 5px 0px;" 
+          style="border: 1px solid #2d8cf0; height: 40px; margin: 2px 0px;" 
         />
 
         <div style="flex: 1;"><DropZone zone="footer2" /></div>

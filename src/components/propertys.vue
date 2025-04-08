@@ -63,15 +63,16 @@ export default {
     this.onResize();
 
     this.$mybus.on("item", e => {
+      // console.log(e)
       this.draggedItem = null;
-      this.title = e.title;
-      this.id = e.id;
-      if(typeof this.$properties[e.title] == "object") {
-        this.draggedItem = Object.assign({}, this.$properties[e.title]);
+      this.title = e.item.title;
+      this.id = e.item.id;
+      if(typeof this.$properties[e.item.title] == "object") {
+        this.draggedItem = Object.assign({}, this.$properties[e.item.title]);
       } else {
         this.draggedItem = Object.assign({}, this.$properties["default"]);
       }
-      if(! (this.platform == "new2POS" && (e.title == "TASK_NM" || e.title == "PLU_NAME"))) {
+      if(! (this.platform == "new2POS" && (e.item.title == "TASK_NM" || e.item.title == "PLU_NAME"))) {
         delete this.draggedItem.key;
       }
 
@@ -79,6 +80,11 @@ export default {
         this.draggedItem[key].value = typeof e[key] == "undefined" ? undefined : e[key];
       }
     })
+
+    this.$mybus.on('delAll', e => {
+      this.draggedItem = null;
+      this.id = ""; this.title = "";
+    });
   },
   unmounted() {},
   methods: {

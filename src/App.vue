@@ -1,8 +1,16 @@
 <template>
   <div id="header">
     <div style="flex: 1;">
-      <Button type="success">上傳</Button>
-      <Button type="success" style="margin-left: 10px;">文字檔</Button>
+      <Button type="success" @click="onUpload">上傳</Button>
+      <Button type="success" @click="onOpenDialog" style="margin: 0 10px;">文字檔</Button>
+
+      <Select placeholder="請選擇範本" @on-change="onChange" style="width: 100px;">
+        <Option v-for="item in options" :value="item" :key="item">
+          {{ item }}
+        </Option>
+      </Select>
+
+      <input type="file" ref="fileInput" @change="onFileSelected" accept=".txt, text/plain" style="display: none;" />
     </div>
       <!-- <Button type="error">Error</Button> -->
 
@@ -33,6 +41,11 @@ export default {
   data () {
     return {
       platform: "JabezPOS",
+      options: [
+        "收據",
+        "結帳單",
+        "標籤"
+      ]
     }
   },
   created(){
@@ -48,6 +61,45 @@ export default {
 	unmounted() {
   },
   methods: {
+    onOpenDialog() {
+      
+    },
+    onUpload() {
+      this.$refs.fileInput.click();
+    },
+    onFileSelected(event) {
+      const file = event.target.files[0]; // Get the selected file
+      if (!file) {
+        console.log("No file selected.");
+        return;
+      }
+
+      if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+          alert('請選擇一個文字檔 (.txt)');
+          event.target.value = null;
+          return;
+      }
+
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.uploadedFileContent = e.target.result;
+        console.log("檔案內容:");
+        console.log(this.uploadedFileContent);
+        alert('檔案讀取成功！'); // Simple feedback
+      };
+
+      reader.onerror = (e) => {
+        console.error("讀取檔案時發生錯誤:", e);
+        alert('讀取檔案時發生錯誤！');
+      };
+
+      reader.readAsText(file);
+      event.target.value = null;
+    },
+    onChange(e) {
+      console.log(e)
+    },
     onClickTrash() {
       this.$mybus.emit('delAll');
     },

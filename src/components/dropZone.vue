@@ -1,7 +1,12 @@
 <template>
   <div class="container" ref="zone" 
     @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
+    :class="{zone: items.length > 0}"
   >
+    <div class="placeholder-text" v-if="items.length == 0">
+      {{ zone }}
+    </div>
+   
     <div v-for="(el, index) in items" :key="index" draggable="true" 
         @dragstart="dragStartItem(index, el, $event)"
         @dragover="dragOverItem(index, el, $event)" 
@@ -44,7 +49,7 @@ export default {
   created() {
   },
   async mounted() {
-    console.log(this.zone)
+    // console.log(this.zone) 
     this.$mybus.on('sourceDragEnd', e => {
       this.draggedItem = null;
     });
@@ -57,12 +62,23 @@ export default {
     this.$mybus.on('delAll', e => {
       this.items = [];
       this.active = -1;
+      this.draggedItem = null;
     });
+    this.$mybus.on("item", e => {
+      if(e.zone != this.zone) {
+        this.draggedItem = null;
+        this.active = -1;
+      }
+    })
   },
   unmounted() {},
   methods: {
     clickItem(index, item, e) {
-      this.$mybus.emit('item', item);
+      this.$mybus.emit('item', {
+        zone: this.zone,
+        item,
+        index
+      });
       this.active = index;
     },
     dragEnterZone(event) {
@@ -84,7 +100,11 @@ export default {
           this.items.push(this.draggedItem);
           this.active = this.items.length - 1;
         }
-        this.$mybus.emit('item', this.draggedItem);
+        this.$mybus.emit('item', {
+          zone: this.zone,
+          item: this.draggedItem,
+          index: this.active
+        });
         this.draggedItem.top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
         this.draggedItem.left = Math.floor(left / this.$cellWidth) * this.$cellWidth;
         this.draggedItem = null;
@@ -118,36 +138,49 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  height: 100%;
-  background: var(--background2);
-  
-  background-image:
-    linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
-    linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
-  background-size: 20px 20px;
+  .container {
+    height: 100%;
+    overflow: hidden;
+    padding: 0px 0px;
+    position: relative;
+  }
 
-  overflow: hidden;
-  padding: 0px 0px;
-  position: relative;
-}
+  .zone {
+    background: var(--background2);
+    
+    background-image:
+      linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
+      linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
+    background-size: 20px 20px;
+    position: relative;
+  }
 
-.item {
-  position: absolute;
-  border: 1px solid #999;
-  padding: 5px;
-  cursor: move;
-  text-align: center;
-  vertical-align: middle;
-  font-size: 16px;
-  background-color: white;
-}
-.item-focus {
-  border: 1px dotted red;
-}
-.item-active {
-  /* border: 1px solid orangered; */
-  background-color: #2d8cf0;
-  color: white;
-}
+  .placeholder-text {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;;
+    background: var(--background2);
+    color: var(--color2);
+  }
+
+  .item {
+    position: absolute;
+    border: 1px solid #999;
+    padding: 5px;
+    cursor: move;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;
+    background-color: white;
+  }
+  .item-focus {
+    border: 1px dotted red;
+  }
+  .item-active {
+    /* border: 1px solid orangered; */
+    background-color: #2d8cf0;
+    color: white;
+  }
 </style>
