@@ -24,6 +24,12 @@ app.use(ViewUIPlus)
         placeholder: "請輸入數字"
       },
     },
+    "自定文字": {
+      text: {
+        title: "文字",
+        placeholder: "請輸入內容"
+      },
+    },
     default: {
       sz: {
         title: "字體大小",

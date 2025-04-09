@@ -13,52 +13,56 @@
         @dragenter="dragEnterItem(index, el, $event)"
         @dragleave="dragLeaveItem(index, el, $event)"
         v-on:click="clickItem(index, el, $event)"
-        class="item" :class="{ 'item-active': active == index }"
+        class="item" 
+        :class="{
+          'item-active': active == index, 
+          // customerize: active != index && typeof el.props == 'object' && typeof el.props.text == 'string' && el.props.text.length > 0 
+        }"
         :style="{
           top: el.top + 'px',
           left: el.left + 'px',
           width: this.$cellWidth + 'px',
           height: this.$cellHeight + 'px',
         }">
-        {{ el.title }}
+        {{ typeof el.props == "object" && typeof el.props.text == "string" && el.props.text.length > 0 
+          ? el.props.text : el.title 
+        }}
     </div>
   </div>
 </template>
 
 <script>
+let groupSource = "", dropEffect = undefined;
 export default {
   name: '',
   components: {},
   props: {
 		group: {
 			type: String,
-			// require: true, 
 			default: "" 
 		},
-    zone: ""
+    zone: "",
   },
   data() {
     return {
       items: [
       ],
       draggedItem: null,
-      _group: "",
       active: -1
     };
   },
   created() {
   },
   async mounted() {
-    // console.log(this.zone) 
+    this.$mybus.on('sourceDragStart', e => {
+      groupSource = ("付款資料" == e.group || "交易明細" == e.group) ? e.group : ""; 
+      dropEffect = typeof e.zone == "string" && e.zone == "any" ? "copy" : undefined;
+      this.draggedItem = {title: e.title};
+    });
     this.$mybus.on('sourceDragEnd', e => {
       this.draggedItem = null;
     });
-    this.$mybus.on('sourceDragStart', e => {
-      this.draggedItem = e;
-    });
-    this.$mybus.on('group', e => {
-      this._group = e; // "付款資料", "交易明細"
-    });
+
     this.$mybus.on('delAll', e => {
       this.items = [];
       this.active = -1;
@@ -70,6 +74,17 @@ export default {
         this.active = -1;
       }
     })
+    this.$mybus.on("item-update", e => {
+      console.log(JSON.stringify(e, null, 2))
+      if(e.zone == this.zone) {
+        let index = this.items.findIndex(el => el.id == e.id);
+        if(index != -1) {
+          this.items[index].props = e.props;
+        }
+      }
+    })
+
+    // this.$mybus.emit('item-update', obj);
   },
   unmounted() {},
   methods: {
@@ -86,8 +101,15 @@ export default {
     },
     dragOverZone(event) {
       event.preventDefault();
-      if(this.group.length > 0 && this.group != this._group)
-        event.dataTransfer.dropEffect = "none";// 不允許放置
+
+      if(typeof dropEffect != "undefined")
+        event.dataTransfer.dropEffect = dropEffect
+      else {
+        if(("付款資料" == this.group || "交易明細" == this.group) && (this.group != groupSource))
+          event.dataTransfer.dropEffect = "none"; // "none" 不允許放置
+        else if(("付款資料" == groupSource || "交易明細" == groupSource) && (this.group != groupSource))
+          event.dataTransfer.dropEffect = "none"; // "none" 不允許放置
+      } 
     },
     dropZone(event) {
       if (this.draggedItem) {
@@ -111,6 +133,7 @@ export default {
       }
     },
     dragStartItem(index, item, event) {
+      dropEffect = "move";
       if(event){
         //  none, copy, copyLink, copyMove, link, linkMove, move, all
         event.dataTransfer.effectAllowed = "move";

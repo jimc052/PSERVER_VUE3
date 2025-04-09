@@ -1,6 +1,16 @@
 <template>
   <div id="header">
-    <div style="flex: 1;">
+    <RadioGroup v-model="platform" type="button" button-style="solid" @on-change="changePlatform"
+     v-if="itemCount == 0"
+    >
+      <Radio label="JabezPOS"></Radio>
+      <Radio label="new2POS"></Radio>
+    </RadioGroup>
+    <div v-else style="color: var(--color1); font-size: 20px;">{{ "平台：" + platform }}</div>
+    
+    <div style="flex: 1;"></div>
+
+    <div>
       <Button type="success" @click="onUpload" :disabled="itemCount > 0">上傳</Button>
       <Button type="success" @click="onOpenDialog" style="margin: 0 10px;"
        :disabled="itemCount == 0"
@@ -19,14 +29,8 @@
       <input type="file" ref="fileInput" @change="onFileSelected" accept=".txt, text/plain" style="display: none;" />
     </div>
     <!-- <Button type="error">Error</Button> -->
+    <div style="flex: 1;"></div>
 
-    <RadioGroup v-model="platform" type="button" button-style="solid" @on-change="changePlatform"
-     v-if="itemCount == 0"
-    >
-      <Radio label="JabezPOS"></Radio>
-      <Radio label="new2POS"></Radio>
-    </RadioGroup>
-    <div v-else style="color: var(--color1); font-size: 20px;">{{ platform }}</div>
 
     <Button type="warning" icon="md-trash" style="margin-left: 10px;"
       @click="onClickTrash" :disabled="itemCount == 0" />
@@ -66,12 +70,12 @@
 </template>
 
 <script>
-import { ref, provide } from 'vue';
 import Elements from './components/elements.vue';
 import Propertys from "./components/propertys.vue";
 import DropZone from "./components/dropZone.vue";
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { parse } from 'vue/compiler-sfc';
 // https://www.iviewui.com/components/modal
 
 export default {
@@ -168,10 +172,8 @@ export default {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.uploadedFileContent = e.target.result;
-        console.log("檔案內容:");
-        console.log(this.uploadedFileContent);
-        alert('檔案讀取成功！'); // Simple feedback
+        this.parseToArray(e.target.result);
+        // alert('檔案讀取成功！'); // Simple feedback
       };
 
       reader.onerror = (e) => {
@@ -181,6 +183,9 @@ export default {
 
       reader.readAsText(file);
       event.target.value = null;
+    },
+    parseToArray(str) { // 還沒寫
+      let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
     },
     onChange(e) {
       console.log(e)

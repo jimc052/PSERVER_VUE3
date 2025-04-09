@@ -37,7 +37,7 @@
 </template>
 
 <script>
-let timeId;
+let timeId, zone;
 
 export default {
   name: '',
@@ -63,10 +63,11 @@ export default {
     this.onResize();
 
     this.$mybus.on("item", e => {
-      // console.log(e)
+      console.log(JSON.stringify(e, null, 2))
       this.draggedItem = null;
       this.title = e.item.title;
       this.id = e.item.id;
+      zone = e.zone;
       if(typeof this.$properties[e.item.title] == "object") {
         this.draggedItem = Object.assign({}, this.$properties[e.item.title]);
       } else {
@@ -75,9 +76,13 @@ export default {
       if(! (this.platform == "new2POS" && (e.item.title == "TASK_NM" || e.item.title == "PLU_NAME"))) {
         delete this.draggedItem.key;
       }
-
+      
       for(let key in this.draggedItem) {
-        this.draggedItem[key].value = typeof e[key] == "undefined" ? undefined : e[key];
+        if(typeof e.item.props == "object") {
+          this.draggedItem[key].value = typeof e.item.props[key] == "undefined" ? undefined : e.item.props[key];
+        } else {
+          this.draggedItem[key].value = undefined;
+        }
       }
     })
 
@@ -100,8 +105,11 @@ export default {
       }, 100);
     }, 
     onChange(key, value, event) {
-      console.log(key)
-      console.log(value.value)
+      let obj = {id: this.id, zone, props: {}}
+      for(let key in this.draggedItem) {
+        obj.props[key] = this.draggedItem[key].value;
+      }
+      this.$mybus.emit('item-update', obj);
     }
   },
   computed: {

@@ -8,10 +8,10 @@
       <div v-if="index == cursor" style="flex: 1;">
         <div class="detail-list">
           <div v-for="(el2, index2) in el.data" :key="index2">
-            <div v-if="el2.title.length > 0" class="detail" 
+            <div v-if="el2.title.length > 0 && (typeof el2.platform == 'undefined' || (el2.platform == this.platform)) " class="detail" 
               draggable="true" 
               @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
-              {{el2.title}}
+              {{this.platform == "JabezPOS" && typeof el2.jabezTitle == "string" ? el2.jabezTitle : el2.title}}
             </div>
           </div>
         </div>
@@ -52,11 +52,14 @@ export default {
         ]},
         {title: "交易明細", data: [
           {title: "PLU_CODE"},
-          {title: "PLU_NAME"},
+          {title: "PLU_NAME", jabezTitle: "PC_NAME"},
           {title: "PRICE"},
-          {title: "CNT"},
+          {title: "CNT", jabezTitle: "COUNT"},
           {title: "TOTAL"},
           {title: "TASK_NM"},
+          {title: "FEEDING_NM", platform: 'JabezPOS'},
+          {title: "VOLUME", platform: 'JabezPOS'},
+          {title: "TAKE_OUT"},
         ]},
         {title: "付款資料", data: [
           {title: "PAD_NAC"},
@@ -75,9 +78,9 @@ export default {
           {title: "Count"},
           {title: "+A_DES"},
           {title: "-A_DES"},
-          {title: "Parper"},
+          {title: "Parper", type: "label"},
           {title: "OutgoBook"},
-          {title: ""},
+          {title: "自定文字", zone: "any"},
           {title: ""},
         ]},
       ], 
@@ -117,8 +120,8 @@ export default {
     },
     dragStart(event, item) {
       event.dataTransfer.effectAllowed = "copy";
-      // event.dataTransfer.setData("text/plain", this.groups[this.cursor].title);
-      this.$mybus.emit('sourceDragStart', Object.assign({}, item));
+      let group = this.cursor == -1 ? "" : this.groups[this.cursor].title
+      this.$mybus.emit('sourceDragStart', Object.assign({group}, item));
     },
     dragEnd(event, item) {
       this.$mybus.emit('sourceDragEnd', item);
@@ -128,11 +131,10 @@ export default {
   },
   watch: {
     platform(val) {
-      console.log("watch.platform: "  + val);
+      // console.log("watch.platform: "  + val);
     },
     cursor(val) {
       this.onResize();
-      this.$mybus.emit('group', this.cursor == -1 ? "" : this.groups[this.cursor].title);
     }
   }
 }
