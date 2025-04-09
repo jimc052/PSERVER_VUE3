@@ -1,6 +1,6 @@
 <template>
   <div id="menu-frame" style="background: var(--background2)">
-    <div v-for="(el, index) in groups" :key="index" :class="{'group-list': index == cursor}">
+    <div v-for="(el, index) in $groups" :key="index" :class="{'group-list': index == cursor}">
       <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
         <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
         <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
@@ -30,60 +30,6 @@ export default {
   },
   data() {
     return {
-      groups: [
-        {title: "機台資料", data: [
-          {title: "STOCK_NO"},
-          {title: "STR_NAME", tag: "STORE_NAME"},
-          {title: "ADDRESS"},
-          {title: "TEL"},
-          {title: "COMP_CODE"},
-          {title: "TM_NO"},
-          {title: "TM_NAME"},
-          {title: "CASH_NAME"}
-        ]},
-        {title: "交易主檔", data: [
-          {title: "T_DAY"},
-          {title: "T_SER_NO"},
-          {title: "T_VIP"},
-          {title: "T_OD"},
-          {title: "IN_AMT"},
-          {title: "CHG_AMT"},
-          {title: "AMOUNT"},
-        ]},
-        {title: "交易明細", data: [
-          {title: "PLU_CODE"},
-          {title: "PLU_NAME", jabezTitle: "PC_NAME"},
-          {title: "PRICE"},
-          {title: "CNT", jabezTitle: "COUNT"},
-          {title: "TOTAL"},
-          {title: "TASK_NM"},
-          {title: "FEEDING_NM", platform: 'JabezPOS'},
-          {title: "VOLUME", platform: 'JabezPOS'},
-          {title: "TAKE_OUT"},
-        ]},
-        {title: "付款資料", data: [
-          {title: "PAD_NAC"},
-          {title: "PAD_SNO"},
-          {title: "PAD_AMT"},
-        ]},
-        {title: "其他", data: [
-          {title: "Titel"},
-          {title: "Space"},
-          {title: "N_LINES"},
-          {title: "SUM_TOTAL"},
-          {title: "TOT_CNT"},
-          {title: "SERVAMT"},
-          {title: "Date"},
-          {title: "Time"},
-          {title: "Count"},
-          {title: "+A_DES"},
-          {title: "-A_DES"},
-          {title: "Parper", type: "label"},
-          {title: "OutgoBook"},
-          {title: "自定文字", zone: "any"},
-          {title: ""},
-        ]},
-      ], 
       cursor: 0,
       platform: "",
     }
@@ -120,7 +66,7 @@ export default {
     },
     dragStart(event, item) {
       event.dataTransfer.effectAllowed = "copy";
-      let group = this.cursor == -1 ? "" : this.groups[this.cursor].title
+      let group = this.cursor == -1 ? "" : this.$groups[this.cursor].title;
       this.$mybus.emit('sourceDragStart', Object.assign({group}, item));
     },
     dragEnd(event, item) {

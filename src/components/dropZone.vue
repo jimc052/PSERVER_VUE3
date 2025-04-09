@@ -197,6 +197,9 @@ export default {
     vertical-align: middle;
     font-size: 16px;
     background-color: white;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .item-focus {
     border: 1px dotted red;

@@ -26,6 +26,26 @@ export default {
   unmounted() {},
   methods: {
     onClick() {
+      console.clear();
+      let json = this.parseText(this.$refs.textarea1.value.trim());
+      this.$refs.textarea2.value = JSON.stringify(json, null, 2);
+    },
+    onInput(){
+      localStorage.setItem("PSERVER", this.$refs.textarea1.value)
+    },
+    parseText(text) {
+      let checkTitle = (title) => {
+        for(let i = 0; i < this.$groups.length; i++) {
+          for(let j = 0; j < this.$groups[i].data.length; j++) {
+            if(typeof this.$groups[i].data[j].tag == "string" && this.$groups[i].data[j].tag == title)
+              return this.$groups[i].data[j].title;
+            if(this.$groups[i].data[j].title == title) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
       let parseTag = (str) => {
         let json = {};
         let i = str.indexOf("[");
@@ -43,6 +63,22 @@ export default {
               }
             });
           }
+          if("#Space,#Date,#TOT_CNT,#Time,#Count".indexOf(json.title) > -1){
+            json.title = json.title.substr(1);
+          } else if(json.title.indexOf("H#") == 0 || json.title.indexOf("I#") == 0) {
+            json.title = json.title.substr(2);
+          } else {
+            let result = checkTitle(json.title);
+            if(typeof result == "string") { // STORE_NAME => STR_NAME
+              // console.log(json.title + " => " + result)
+              json.title = result;
+            } else if(result == false) {
+              // console.log("自定文字: " + json.title)
+              let obj = Object.assign({text: json.title}, json.props)
+              json = {title: "自定文字", props: obj};
+            }
+          }
+          // if(json.title.indexOf("#") > -1) console.log(json.title)
           str = str.substr(j + 1);
         }
         return json;
@@ -55,44 +91,32 @@ export default {
             let j = str.indexOf("]", i);
             let s = str.substr(0, j + 1);
             let json = parseTag(s);
-            console.log(s)
-            console.log(json)
-            // let arr2 = s.split(":");
-            // let json = {title: arr2[0], props: {}};
-            // if(arr2.length == 2) {
-            //   let arr3 = arr2[1].split(";");
-            //   arr3.forEach(el1 => {
-            //     let arr4 = el1.split("=");
-            //     if(arr4.length == 2) {
-            //       json.props[arr4[0]] = arr4[1];
-            //     }
-            //   });
-            // }
-            
-            // if(Object.keys(json.props).length == 0) delete json.props;
+            // console.log(s); console.log(JSON.stringify(json))
+            if(Object.keys(json.props).length == 0) delete json.props;
             arr.push(json);
             str = str.substr(j + 1);
           } else if(i > 0) {
             let s = str.substr(0, i)
-            arr.push({title: "自定文字", text: s});
+            arr.push({title: "自定文字", props: {text: s}});
             str = str.substr(i);
           } else if(str.length > 0) {
-            arr.push({title: "自定文字", text: str});
+            arr.push({title: "自定文字", props: {text: str}});
             str = "";
           }
           times++;
-          if(times > 100) {
+          if(times > 30) {
             console.log("too many times............" + str)
             break;
           }
         }
         return arr;
       }
-      let str = this.$refs.textarea1.value.trim().split("\n");
-      if(str.length == 0) {
+      
+      if(text.length == 0) {
         alert("沒有資料轉換")
         return;
       }
+      let str = text.split("\n");
       let json = {}, section = "header", y = 0;
       for(let i = 0; i < str.length; i++) {
         let lines = str[i];
@@ -117,16 +141,20 @@ export default {
           continue;
         } else if(lines.indexOf("P#") == 0) {
           section = "payment";
-          json[section] = parseLine(parseLine(lines.replace("P#", "")));
+          json[section] =parseLine(lines.replace("P#", ""));
+          let x = 0;
+          json[section].forEach(el => {
+            el.top = 0;
+            el.left = x;
+            x += this.$cellWidth;
+          })
 
           section = "footer2";
           json[section] = [];
           y = 0;
           continue;
         }
-        // if(section != "detail") {
-        //   continue;
-        // }
+        // if(section != "detail")  continue;
 
         if(lines.trim().length > 0) {
           let arr = parseLine(lines);
@@ -138,7 +166,6 @@ export default {
           })
           if(section == "detail") {
             json[section].items = json[section].items.concat(arr);
-            console.log(json[section])
           } else {
             json[section] = json[section].concat(arr);
           }          
@@ -146,10 +173,8 @@ export default {
 
         y += this.$cellHeight;        
       }
-      this.$refs.textarea2.value = JSON.stringify(json, null, 2);
-    },
-    onInput(){
-      localStorage.setItem("PSERVER", this.$refs.textarea1.value)
+      // console.log(JSON.stringify(json));
+      return json;
     }
   },
   computed: {
