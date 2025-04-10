@@ -6,8 +6,6 @@ import ViewUIPlus from 'view-ui-plus'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import mitt from "mitt"
 
-
-// console.log(typeof Exercise)
 const app = createApp(typeof Exercise == "object" ? Exercise : App);
 
 app.config.productionTip = false;
@@ -150,6 +148,7 @@ app.use(ViewUIPlus)
     ]},
     {title: "其他", data: [
       {title: "Titel"},
+      {title: "PrnLogo"},
       {title: "Space", hash: "#"},
       {title: "N_LINES"},
       {title: "SUM_TOTAL"},
@@ -168,12 +167,13 @@ app.use(ViewUIPlus)
   ]
 
   app.config.globalProperties.$parseText = (text) => {
+    let groups = app.config.globalProperties.$groups;
     let checkTitle = (title) => {
-      for(let i = 0; i < this.$groups.length; i++) {
-        for(let j = 0; j < this.$groups[i].data.length; j++) {
-          if(typeof this.$groups[i].data[j].tag == "string" && this.$groups[i].data[j].tag == title)
-            return this.$groups[i].data[j].title;
-          if(this.$groups[i].data[j].title == title) {
+      for(let i = 0; i < groups.length; i++) {
+        for(let j = 0; j < groups[i].data.length; j++) {
+          if(typeof groups[i].data[j].tag == "string" && groups[i].data[j].tag == title)
+            return groups[i].data[j].title;
+          if(groups[i].data[j].title == title) {
             return true;
           }
         }
@@ -197,7 +197,7 @@ app.use(ViewUIPlus)
             }
           });
         }
-        if("#Space,#Date,#TOT_CNT,#Time,#Count".indexOf(json.title) > -1){
+        if("#Space,#Date,#TOT_CNT,#Time,#Count,#PrnLogo".indexOf(json.title) > -1){
           json.title = json.title.substr(1);
         } else if(json.title.indexOf("H#") == 0 || json.title.indexOf("I#") == 0) {
           json.title = json.title.substr(2);
@@ -207,7 +207,7 @@ app.use(ViewUIPlus)
             // console.log(json.title + " => " + result)
             json.title = result;
           } else if(result == false) {
-            // console.log("自定文字: " + json.title)
+            console.log("自定文字: " + json.title)
             let obj = Object.assign({text: json.title}, json.props)
             json = {title: "自定文字", props: obj};
           }
@@ -251,9 +251,18 @@ app.use(ViewUIPlus)
       return;
     }
     let str = text.split("\n");
-    let json = {}, section = "header", y = 0;
+    let json = {props: {}}, section = "header", y = 0;
     for(let i = 0; i < str.length; i++) {
       let lines = str[i];
+      if(lines == "BEEP#") {
+        json.props.beep = true;
+        continue;
+      }
+      else if(lines == ";[#PrnSize:") {
+        json.props.prnSize = lines.replace(";[#PrnSize:", "").replace("]", "");
+        continue;
+      }
+
       if(lines.indexOf("H#") == 0) {
         section = "header";
         json[section] = [];
@@ -280,7 +289,7 @@ app.use(ViewUIPlus)
         json[section].forEach(el => {
           el.top = 0;
           el.left = x;
-          x += this.$cellWidth;
+          x += app.config.globalProperties.$cellWidth;
         })
 
         section = "footer2";
@@ -288,7 +297,7 @@ app.use(ViewUIPlus)
         y = 0;
         continue;
       }
-      // if(section != "detail")  continue;
+      // if(section != "header")  continue;
 
       if(lines.trim().length > 0) {
         let arr = parseLine(lines);
@@ -296,16 +305,24 @@ app.use(ViewUIPlus)
         arr.forEach(e => {
           e.top = y;
           e.left = x;
-          x += this.$cellWidth;
+          x += app.config.globalProperties.$cellWidth;
         })
-        if(section == "detail") {
-          json[section].items = json[section].items.concat(arr);
-        } else {
-          json[section] = json[section].concat(arr);
-        }          
+        try {
+          if(section == "detail") {
+            json[section].items = json[section].items.concat(arr);
+          } else {
+            json[section] = json[section].concat(arr);
+          }              
+        } catch(e) {
+          console.log(section)
+          console.warn(e);
+          (e)
+        }
+      
+      
       }
 
-      y += this.$cellHeight;        
+      y += app.config.globalProperties.$cellHeight;        
     }
     // console.log(JSON.stringify(json));
     return json;

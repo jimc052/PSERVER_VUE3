@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import {sample} from "./system/sample.js"
+
 export default {
   name: 'Exercise',
   components: {},
@@ -27,155 +29,30 @@ export default {
   methods: {
     onClick() {
       console.clear();
-      let json = this.parseText(this.$refs.textarea1.value.trim());
-      this.$refs.textarea2.value = JSON.stringify(json, null, 2);
+      let s = this.$refs.textarea1.value.trim(), result = "";
+      if(s.indexOf("{") == 0) {
+        let json = JSON.parse(s);
+        if(typeof json["props"] == "object") {
+          if(json["props"].beep == true) {
+            result += "BEEP#\n"
+          }
+          if(typeof json["props"].prnSize == "number") {
+            result += `;[#PrnSize:${json["props"].prnSize}]\n`
+          }
+
+          // ;[#PrnSize:80]
+        }
+
+      } else {
+        let json = this.$parseText(this.$refs.textarea1.value.trim());
+        result = JSON.stringify(json, null, 2);
+      }
+      
+      this.$refs.textarea2.value = result;
     },
     onInput(){
       localStorage.setItem("PSERVER", this.$refs.textarea1.value)
     },
-    parseText(text) {
-      let checkTitle = (title) => {
-        for(let i = 0; i < this.$groups.length; i++) {
-          for(let j = 0; j < this.$groups[i].data.length; j++) {
-            if(typeof this.$groups[i].data[j].tag == "string" && this.$groups[i].data[j].tag == title)
-              return this.$groups[i].data[j].title;
-            if(this.$groups[i].data[j].title == title) {
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-      let parseTag = (str) => {
-        let json = {};
-        let i = str.indexOf("[");
-        if(i == 0) {
-          let j = str.indexOf("]", i);
-          let s = str.substr(1, j - 1);
-          let arr2 = s.split(":");
-          json = {title: arr2[0], props: {}};
-          if(arr2.length == 2) {
-            let arr3 = arr2[1].split(";");
-            arr3.forEach(el1 => {
-              let arr4 = el1.split("=");
-              if(arr4.length == 2) {
-                json.props[arr4[0]] = arr4[1];
-              }
-            });
-          }
-          if("#Space,#Date,#TOT_CNT,#Time,#Count".indexOf(json.title) > -1){
-            json.title = json.title.substr(1);
-          } else if(json.title.indexOf("H#") == 0 || json.title.indexOf("I#") == 0) {
-            json.title = json.title.substr(2);
-          } else {
-            let result = checkTitle(json.title);
-            if(typeof result == "string") { // STORE_NAME => STR_NAME
-              // console.log(json.title + " => " + result)
-              json.title = result;
-            } else if(result == false) {
-              // console.log("自定文字: " + json.title)
-              let obj = Object.assign({text: json.title}, json.props)
-              json = {title: "自定文字", props: obj};
-            }
-          }
-          // if(json.title.indexOf("#") > -1) console.log(json.title)
-          str = str.substr(j + 1);
-        }
-        return json;
-      }
-      let parseLine = (str) => {
-        let arr = [], times = 0;
-        while(str.length > 0) {
-          let i = str.indexOf("[");
-          if(i == 0) {
-            let j = str.indexOf("]", i);
-            let s = str.substr(0, j + 1);
-            let json = parseTag(s);
-            // console.log(s); console.log(JSON.stringify(json))
-            if(Object.keys(json.props).length == 0) delete json.props;
-            arr.push(json);
-            str = str.substr(j + 1);
-          } else if(i > 0) {
-            let s = str.substr(0, i)
-            arr.push({title: "自定文字", props: {text: s}});
-            str = str.substr(i);
-          } else if(str.length > 0) {
-            arr.push({title: "自定文字", props: {text: str}});
-            str = "";
-          }
-          times++;
-          if(times > 30) {
-            console.log("too many times............" + str)
-            break;
-          }
-        }
-        return arr;
-      }
-      
-      if(text.length == 0) {
-        alert("沒有資料轉換")
-        return;
-      }
-      let str = text.split("\n");
-      let json = {}, section = "header", y = 0;
-      for(let i = 0; i < str.length; i++) {
-        let lines = str[i];
-        if(lines.indexOf("H#") == 0) {
-          section = "header";
-          json[section] = [];
-          y = 0;
-          continue;
-        } else if(lines.indexOf("I#") == 0) {
-          section = "detail";
-          let obj = parseTag(lines.replace("I#", ""));
-          json[section] = {
-            props: obj.props,
-            items: []
-          };
-          y = 0;
-          continue;
-        } else if(lines.indexOf("F#") == 0) {
-          section = "footer1";
-          json[section] = [];
-          y = 0;
-          continue;
-        } else if(lines.indexOf("P#") == 0) {
-          section = "payment";
-          json[section] =parseLine(lines.replace("P#", ""));
-          let x = 0;
-          json[section].forEach(el => {
-            el.top = 0;
-            el.left = x;
-            x += this.$cellWidth;
-          })
-
-          section = "footer2";
-          json[section] = [];
-          y = 0;
-          continue;
-        }
-        // if(section != "detail")  continue;
-
-        if(lines.trim().length > 0) {
-          let arr = parseLine(lines);
-          let x = 0;
-          arr.forEach(e => {
-            e.top = y;
-            e.left = x;
-            x += this.$cellWidth;
-          })
-          if(section == "detail") {
-            json[section].items = json[section].items.concat(arr);
-          } else {
-            json[section] = json[section].concat(arr);
-          }          
-        }
-
-        y += this.$cellHeight;        
-      }
-      // console.log(JSON.stringify(json));
-      return json;
-    }
   },
   computed: {
   },

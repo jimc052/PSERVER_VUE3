@@ -14,11 +14,13 @@
         文字檔
       </Button>
 
+      <!-- 沒有在用了
       <Select placeholder="請選擇範本" @on-change="onChange" style="width: 100px;" :disabled="itemCount > 0">
         <Option v-for="item in options" :value="item" :key="item">
           {{ item }}
         </Option>
-      </Select>
+      </Select> 
+      -->
 
       <input type="file" ref="fileInput" @change="onFileSelected" accept=".txt, text/plain" style="display: none;" />
     </div>
@@ -41,13 +43,12 @@
             <DropZone group="交易明細" zone="detail" ref="detail" />
           </pane>
 
-          <pane min-size="40" style="display: flex; flex-direction: column; background-color: #2d8cf0; ">
+          <pane min-size="20" style="display: flex; flex-direction: column; background-color: #17233d; ">
             <div style="flex: 1;">
               <DropZone zone="footer1" ref="footer1" />
             </div>
 
-            <DropZone group="付款資料" zone="payment" ref="payment"
-              style="border: 1px solid #2d8cf0; height: 60px; margin: 10px 0px;" />
+            <DropZone group="付款資料" zone="payment" ref="payment" style="height: 50px; margin: 10px 0px;" />
 
             <div style="flex: 1;">
               <DropZone zone="footer2" ref="footer2" />
@@ -69,8 +70,8 @@ import Propertys from "./components/propertys.vue";
 import DropZone from "./components/dropZone.vue";
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-import { parse } from 'vue/compiler-sfc';
 // https://www.iviewui.com/components/modal
+// import {sample} from "./system/sample.js" // 沒有在用了
 
 export default {
   name: '',
@@ -98,15 +99,7 @@ export default {
       })()
     }
     this.$mybus.on("item", e => {
-      this.itemCount = 0;
-      let count = 0;
-      let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
-      arr.forEach(el => {
-        if (typeof el != "undefined" && typeof el.items == "object")
-          count += el.items.length;
-      });
-
-      this.itemCount = count;
+      this.count();
     });
 
     this.$mybus.on('delAll', e => {
@@ -116,6 +109,17 @@ export default {
   unmounted() {
   },
   methods: {
+    count() {
+      this.itemCount = 0;
+      let count = 0;
+      let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
+      arr.forEach(el => {
+        if (typeof el != "undefined" && typeof el.items == "object")
+          count += el.items.length;
+      });
+
+      this.itemCount = count;
+    },
     onOpenDialog() {
       let width = document.body.clientWidth - 200;
       let height = document.body.clientHeight - 250;
@@ -166,7 +170,7 @@ export default {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        this.parseToArray(e.target.result);
+        this.parseFile(e.target.result);
         // alert('檔案讀取成功！'); // Simple feedback
       };
 
@@ -178,21 +182,20 @@ export default {
       reader.readAsText(file);
       event.target.value = null;
     },
-    parseToArray(str) { // 還沒寫
-      let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
-    },
-    onChange(e) {
-      let result = this.sample(e);
+    parseFile(str) {
+      let result = this.$parseText(str);
       if (typeof result == "object") {
         for (let key in result) {
-          if (key == "detail") {
+          if (key == "props") {
+            continue;
+          } else if (key == "detail") {
             this.$refs[key].items = result[key].items
-          } else {
+          } else if(typeof result[key] == "object"){
             this.$refs[key].items = result[key]
           }
         }
-
       }
+      this.count();
     },
     onClickTrash() {
       this.$mybus.emit('delAll');
@@ -200,552 +203,25 @@ export default {
     changePlatform(val) {
       this.$mybus.emit('platform', val);
     },
-    sample(str) {
-      let json = {
-        "收據": {
-          "header": [
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Check",
-                "sz": "2",
-                "al": "1"
-              },
-              "top": 0,
-              "left": 0
-            },
-            {
-              "title": "STR_NAME",
-              "top": 80,
-              "left": 0
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "2"
-              },
-              "top": 80,
-              "left": 120
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "TEL:"
-              },
-              "top": 120,
-              "left": 0
-            },
-            {
-              "title": "TEL",
-              "props": {
-                "sz": "1"
-              },
-              "top": 120,
-              "left": 120
-            },
-            {
-              "title": "Date",
-              "top": 160,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": " "
-              },
-              "top": 160,
-              "left": 120
-            },
-            {
-              "title": "Time",
-              "top": 160,
-              "left": 240
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Order#:"
-              },
-              "top": 200,
-              "left": 0
-            },
-            {
-              "title": "T_SER_NO",
-              "props": {
-                "Cpy": "4,3"
-              },
-              "top": 200,
-              "left": 120
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "TM:TM"
-              },
-              "top": 240,
-              "left": 0
-            },
-            {
-              "title": "TM_NO",
-              "props": {
-                "ab": "8"
-              },
-              "top": 240,
-              "left": 120
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Cashier:"
-              },
-              "top": 240,
-              "left": 240
-            },
-            {
-              "title": "CASH_NAME",
-              "props": {
-                "Cpy": "1,3"
-              },
-              "top": 240,
-              "left": 360
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "------------------------------------------"
-              },
-              "top": 280,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Item List",
-                "ab": "30"
-              },
-              "top": 320,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Qty",
-                "ab": "3"
-              },
-              "top": 320,
-              "left": 120
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "1"
-              },
-              "top": 320,
-              "left": 240
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Amt",
-                "af": "7"
-              },
-              "top": 320,
-              "left": 360
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "------------------------------------------"
-              },
-              "top": 360,
-              "left": 0
-            }
-          ],
-          "detail": {
-            "props": {
-              "text": "MAIN",
-              "qrd": "1",
-              "prc": "0"
-            },
-            "items": [
-              {
-                "title": "PC_NAME",
-                "props": {
-                  "Len": "30",
-                  "ab": "26"
-                },
-                "top": 0,
-                "left": 0
-              },
-              {
-                "title": "自定文字",
-                "props": {
-                  "text": "x"
-                },
-                "top": 0,
-                "left": 120
-              },
-              {
-                "title": "Space",
-                "props": {
-                  "ab": "1"
-                },
-                "top": 0,
-                "left": 240
-              },
-              {
-                "title": "CNT",
-                "props": {
-                  "af": "4"
-                },
-                "top": 0,
-                "left": 360
-              },
-              {
-                "title": "Space",
-                "props": {
-                  "ab": "2"
-                },
-                "top": 0,
-                "left": 480
-              },
-              {
-                "title": "TOTAL",
-                "props": {
-                  "af": "8"
-                },
-                "top": 0,
-                "left": 600
-              },
-              {
-                "title": "自定文字",
-                "props": {
-                  "text": "  "
-                },
-                "top": 40,
-                "left": 0
-              },
-              {
-                "title": "TASK_NM",
-                "top": 40,
-                "left": 120
-              }
-            ]
-          },
-          "footer1": [
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "------------------------------------------"
-              },
-              "top": 0,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Total"
-              },
-              "top": 40,
-              "left": 0
-            },
-            {
-              "title": "Count",
-              "props": {
-                "af": "4"
-              },
-              "top": 40,
-              "left": 120
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": " Items"
-              },
-              "top": 40,
-              "left": 240
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "15"
-              },
-              "top": 40,
-              "left": 360
-            },
-            {
-              "title": "TOT_CNT",
-              "props": {
-                "af": "8"
-              },
-              "top": 40,
-              "left": 480
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": " Qty "
-              },
-              "top": 40,
-              "left": 600
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "------------------------------------------"
-              },
-              "top": 80,
-              "left": 0
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "28"
-              },
-              "top": 120,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Subtotal :"
-              },
-              "top": 120,
-              "left": 120
-            },
-            {
-              "title": "SUM_TOTAL",
-              "props": {
-                "af": "7"
-              },
-              "top": 120,
-              "left": 240
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "28"
-              },
-              "top": 160,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Surcharge:"
-              },
-              "top": 160,
-              "left": 120
-            },
-            {
-              "title": "+A_DES",
-              "props": {
-                "af": "7"
-              },
-              "top": 160,
-              "left": 240
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "28"
-              },
-              "top": 200,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Discount :"
-              },
-              "top": 200,
-              "left": 120
-            },
-            {
-              "title": "-A_DES",
-              "props": {
-                "ab": "7"
-              },
-              "top": 200,
-              "left": 240
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "=========================================="
-              },
-              "top": 240,
-              "left": 0
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "28"
-              },
-              "top": 280,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Grand Total:"
-              },
-              "top": 280,
-              "left": 120
-            },
-            {
-              "title": "AMOUNT",
-              "props": {
-                "af": "7"
-              },
-              "top": 280,
-              "left": 240
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "12"
-              },
-              "top": 360,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Tender:$"
-              },
-              "top": 360,
-              "left": 120
-            },
-            {
-              "title": "IN_AMT",
-              "props": {
-                "af": "6"
-              },
-              "top": 360,
-              "left": 240
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": " "
-              },
-              "top": 360,
-              "left": 360
-            },
-            {
-              "title": "Space",
-              "props": {
-                "ab": "4"
-              },
-              "top": 360,
-              "left": 480
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Refund:$"
-              },
-              "top": 360,
-              "left": 600
-            },
-            {
-              "title": "CHG_AMT",
-              "props": {
-                "af": "4"
-              },
-              "top": 360,
-              "left": 720
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": " "
-              },
-              "top": 360,
-              "left": 840
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "Payment Type："
-              },
-              "top": 400,
-              "left": 0
-            }
-          ],
-          "payment": [
-            {
-              "title": "PAD_NAC",
-              "props": {
-                "ab": "12"
-              },
-              "top": 0,
-              "left": 0
-            },
-            {
-              "title": "PAD_SNO",
-              "props": {
-                "fc": "********",
-                "Cpy": "13,16",
-                "ab": "16"
-              },
-              "top": 0,
-              "left": 120
-            },
-            {
-              "title": "PAD_AMT",
-              "props": {
-                "af": "14"
-              },
-              "top": 0,
-              "left": 240
-            }
-          ],
-          "footer2": [
-            {
-              "title": "N_LINES",
-              "props": {
-                "nl": "2"
-              },
-              "top": 0,
-              "left": 0
-            },
-            {
-              "title": "自定文字",
-              "props": {
-                "text": "《《 Thank You for Your Patronage!》》",
-                "al": "1"
-              },
-              "top": 80,
-              "left": 0
-            },
-            {
-              "title": "N_LINES",
-              "props": {
-                "nl": "4"
-              },
-              "top": 160,
-              "left": 0
-            }
-          ]
+    onChange(e) { // 沒有在用了
+      /*
+      let result = sample[e];
+      if (typeof result == "object") {
+        for (let key in result) {
+          if (key == "props") {
+            continue;
+          } else if (key == "detail") {
+            this.$refs[key].items = result[key].items
+          } else if(typeof result[key] == "object"){
+            this.$refs[key].items = result[key]
+          }
         }
       }
-      return json[str];
-    }
+      this.count();
+      */
+    },
   },
   computed: {
-    // itemCount() {
-    //   let count = 0;
-    //   // let arr = [this.$refs.header, this.$refs.detail, this.$refs.footer1, this.$refs.payment, this.$refs.footer2];
-    //   // arr.forEach(el => {
-    //   //   console.log(el)
-    //   //   if(typeof el != "undefined" && typeof el.items == "object")
-    //   //     count += el.items.length;
-    //   // });
-
-    //   return count;
-    // }
   }
 }
 </script>

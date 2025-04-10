@@ -1,7 +1,6 @@
 <template>
-  <div class="container" ref="zone" 
+  <div class="container" :class="{gradient: items.length > 0}" ref="zone" 
     @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
-    :class="{zone: items.length > 0}"
   >
     <div class="placeholder-text" v-if="items.length == 0">
       {{ zone }}
@@ -168,13 +167,17 @@ export default {
     position: relative;
   }
 
-  .zone {
-    background: var(--background2);
-    
+  .gradient {
+    background: var(--background1);
+
+    /* background-image: radial-gradient(var(--color1) 1px, transparent 0);
+    background-size: 20px 20px; */
+
     background-image:
-      linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
-      linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
+    linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
+    linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
     background-size: 20px 20px;
+
     position: relative;
   }
 
@@ -184,29 +187,30 @@ export default {
     align-items: center;
     justify-content: center;
     font-size: 25px;;
-    background: var(--background2);
-    color: var(--color2);
+    background: var(--background1);
+    color: var(--color1);
   }
 
   .item {
     position: absolute;
-    border: 1px solid #999;
+    border: 1px solid #2db7f5;
+    border-radius: 8px;
     padding: 5px;
     cursor: move;
     text-align: center;
     vertical-align: middle;
     font-size: 16px;
-    background-color: white;
+    background-color: #c5c8ce;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }
   .item-focus {
-    border: 1px dotted red;
+    border: 1px dotted #ff9900;
   }
   .item-active {
     /* border: 1px solid orangered; */
-    background-color: #2d8cf0;
+    background-color: #5cadff;
     color: white;
   }
 </style>
