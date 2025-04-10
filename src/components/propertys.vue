@@ -68,10 +68,21 @@ export default {
       this.title = e.item.title;
       this.id = e.item.id;
       zone = e.zone;
+
+      let json = {};
+      if(e.item.title == "自定文字") {
+        json = {
+          text: {
+            title: "文字",
+            placeholder: "請輸入內容"
+          }
+        }
+      }
+
       if(typeof this.$properties[e.item.title] == "object") {
-        this.draggedItem = Object.assign({}, this.$properties[e.item.title]);
+        this.draggedItem = Object.assign(json, this.$properties[e.item.title]);
       } else {
-        this.draggedItem = Object.assign({}, this.$properties["default"]);
+        this.draggedItem = Object.assign(json, this.$properties["default"]);
       }
       if(! (this.platform == "new2POS" && (e.item.title == "TASK_NM" || e.item.title == "PLU_NAME"))) {
         delete this.draggedItem.key;

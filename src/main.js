@@ -6,7 +6,8 @@ import ViewUIPlus from 'view-ui-plus'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import mitt from "mitt"
 
-const app = createApp(typeof Exercise == "object" ? Exercise : App);
+let page = localStorage.getItem("page");
+const app = createApp(page != "App" ? Exercise : App);
 
 app.config.productionTip = false;
 // app.use(createPinia())
@@ -18,26 +19,7 @@ app.use(ViewUIPlus)
   app.config.globalProperties.$cellWidth = 120;
   app.config.globalProperties.$cellGap = 5;
 
-  let sz = {
-    title: "字體大小",
-    placeholder: "請選擇",
-    options: [
-      { value: 1, label: "1 * 1" },
-      { value: 2, label: "2 * 2" },
-      { value: 3, label: "3 * 3" },
-      { value: 4, label: "2 * 1" },
-      { value: 5, label: "1 * 2" }
-    ]
-  };
-  let al = {
-    title: "對齊",
-    placeholder: "請選擇",
-    options: [
-      { value: 0, label: "靠左" },
-      { value: 1, label: "靠中" },
-      { value: 2, label: "靠右" }
-    ]
-  };
+  app.config.globalProperties.$isLocal = location.href.indexOf("192.168") > -1;
 
   app.config.globalProperties.$properties = {
     N_LINES: {
@@ -46,17 +28,33 @@ app.use(ViewUIPlus)
         placeholder: "請輸入數字"
       },
     },
-    "自定文字": {
-      text: {
-        title: "文字",
-        placeholder: "請輸入內容"
-      },
-      sz,
-      al
-    },
+    // "自定文字": {
+    //   text: {
+    //     title: "文字",
+    //     placeholder: "請輸入內容"
+    //   },
+    // },
     default: {
-      sz,
-      al,
+      sz: {
+        title: "字體大小",
+        placeholder: "請選擇",
+        options: [
+          { value: 1, label: "1 * 1" },
+          { value: 2, label: "2 * 2" },
+          { value: 3, label: "3 * 3" },
+          { value: 4, label: "2 * 1" },
+          { value: 5, label: "1 * 2" }
+        ]
+      },
+      al: {
+        title: "對齊",
+        placeholder: "請選擇",
+        options: [
+          { value: 0, label: "靠左" },
+          { value: 1, label: "靠中" },
+          { value: 2, label: "靠右" }
+        ]
+      },
       Len: {
         title: "字串長度",
         placeholder: "請輸入數字"
@@ -157,20 +155,23 @@ app.use(ViewUIPlus)
     ]},
     {title: "其他", data: [
       {title: "Titel"},
-      {title: "PrnLogo"},
-      {title: "Space", hash: "#"},
+      {title: "#PrnLogo"},
+      {title: "#Space"},
+      {title: "#TOT_CNT"},
+      {title: "#Date"},
+      {title: "#Time"},
+      {title: "#Count"},
       {title: "N_LINES"},
       {title: "SUM_TOTAL"},
-      {title: "TOT_CNT"},
       {title: "SERVAMT"},
-      {title: "Date", hash: "#"},
-      {title: "Time", hash: "#"},
-      {title: "Count", hash: "#"},
       {title: "+A_DES"},
       {title: "-A_DES"},
       {title: "Parper", type: "label"},
       {title: "OutgoBook"},
       {title: "自定文字", zone: "any"},
+      {title: ""},
+      {title: ""},
+      {title: ""},
       {title: ""},
     ]},
   ]
@@ -206,9 +207,10 @@ app.use(ViewUIPlus)
             }
           });
         }
-        if("#Space,#Date,#TOT_CNT,#Time,#Count,#PrnLogo".indexOf(json.title) > -1){
-          json.title = json.title.substr(1);
-        } else if(json.title.indexOf("H#") == 0 || json.title.indexOf("I#") == 0) {
+        // if("#Space,#Date,#TOT_CNT,#Time,#Count,#PrnLogo".indexOf(json.title) > -1){
+        //   json.title = json.title.substr(1);
+        // } else 
+        if(json.title.indexOf("H#") == 0 || json.title.indexOf("I#") == 0) {
           json.title = json.title.substr(2);
         } else {
           let result = checkTitle(json.title);

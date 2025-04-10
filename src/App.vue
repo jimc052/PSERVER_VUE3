@@ -29,6 +29,10 @@
 
     <Button type="warning" icon="md-trash" style="margin-left: 10px;" @click="onClickTrash"
       :disabled="itemCount == 0" />
+
+    <Button type="warning" icon="md-swap" style="margin-left: 10px;" 
+      v-if="$isLocal"
+      @click="onClickSwap"/>
   </div>
   <div id="section">
     <Elements />
@@ -199,6 +203,10 @@ export default {
     },
     onClickTrash() {
       this.$mybus.emit('delAll');
+    },
+    onClickSwap() {
+      localStorage.setItem("page", "Exercise");
+      location.reload();
     },
     changePlatform(val) {
       this.$mybus.emit('platform', val);

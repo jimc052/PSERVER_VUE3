@@ -1,6 +1,9 @@
 <template>
   <div id="header">
     <Button type="success" @click="onClick">轉換</Button>
+    <div style="flex: 1;"></div>
+    <Button type="warning" icon="md-swap" style="margin-left: 10px;" 
+      @click="onClickSwap"/>
   </div>
   <div id="section">
     <textarea ref="textarea1" @input="onInput"></textarea>
@@ -36,11 +39,9 @@ export default {
           if(json["props"].beep == true) {
             result += "BEEP#\n"
           }
-          if(typeof json["props"].prnSize == "number") {
+          if(typeof json["props"].prnSize == "number") { // ;[#PrnSize:80]
             result += `;[#PrnSize:${json["props"].prnSize}]\n`
           }
-
-          // ;[#PrnSize:80]
         }
 
       } else {
@@ -52,6 +53,10 @@ export default {
     },
     onInput(){
       localStorage.setItem("PSERVER", this.$refs.textarea1.value)
+    },
+    onClickSwap() {
+      localStorage.setItem("page", "App");
+      location.reload();
     },
   },
   computed: {

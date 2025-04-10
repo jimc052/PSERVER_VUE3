@@ -193,8 +193,8 @@ export default {
 
   .item {
     position: absolute;
-    border: 1px solid #2db7f5;
-    border-radius: 8px;
+    /* border: 1px solid #2db7f5; */
+    border-radius: 5px;
     padding: 5px;
     cursor: move;
     text-align: center;
