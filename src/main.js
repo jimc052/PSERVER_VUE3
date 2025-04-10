@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import Exercise from './Exercise.vue'
+// import Exercise from './Exercise.vue'
 import ViewUIPlus from 'view-ui-plus'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import mitt from "mitt"
@@ -106,7 +106,7 @@ app.use(ViewUIPlus)
       {title: "TM_NAME"},
       {title: "CASH_NAME"}
     ]},
-    {title: "會員資料", data: [
+    {title: "會員資料", platform: 'JabezPOS', data: [
       {title: "T_VIP"},
       {title: "VIP_NAME"},
       {title: "VIP_TEL1"},
@@ -118,14 +118,17 @@ app.use(ViewUIPlus)
     ]},
     {title: "交易主檔", data: [
       {title: "T_DAY"},
+      {title: "T_TIME"},
       {title: "T_SER_NO"},
       {title: "T_VIP"},
+      {title: "T_OD"},
+      {title: "T_TABLE"},
+      {title: "T_FLAG6"},
       {title: "T_OD"},
       {title: "IN_AMT"},
       {title: "CHG_AMT"},
       {title: "AMOUNT"},
-      {title: "T_TABLE"},
-      {title: "T_FLAG6"},
+      {title: ""},
       {title: ""},
       {title: ""},
       {title: ""}
