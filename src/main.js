@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-// import Exercise from './Exercise.vue'
+import Exercise from './Exercise.vue'
 import ViewUIPlus from 'view-ui-plus'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import mitt from "mitt"
@@ -114,6 +114,12 @@ app.use(ViewUIPlus)
       {title: "ADDPOINTS"},
       {title: "MINUSPOINTS"},
       {title: "NOWPOINTS"},
+      {title: "D_VIP_NAME"},
+      {title: "D_TEL1"},
+      {title: "D_MEMO"},
+      {title: "REMARK"},
+      {title: ""},
+      {title: ""},
       {title: ""},
     ]},
     {title: "交易主檔", data: [
