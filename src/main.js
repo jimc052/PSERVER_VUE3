@@ -7,7 +7,7 @@ import 'view-ui-plus/dist/styles/viewuiplus.css'
 import mitt from "mitt"
 
 let page = localStorage.getItem("page");
-const app = createApp(page != "App" ? Exercise : App);
+const app = createApp(page == "Exercise" ? Exercise : App);
 
 app.config.productionTip = false;
 // app.use(createPinia())
