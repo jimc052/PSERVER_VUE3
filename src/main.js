@@ -19,7 +19,7 @@ app.use(ViewUIPlus)
   app.config.globalProperties.$cellWidth = 120;
   app.config.globalProperties.$cellGap = 5;
 
-  app.config.globalProperties.$isLocal = location.href.indexOf("192.168") > -1;
+  app.config.globalProperties.$isLocal = location.href.indexOf("192.168") > -1 || location.href.indexOf("idx-pservervue3git-") > -1 ;
 
   app.config.globalProperties.$properties = {
     N_LINES: {

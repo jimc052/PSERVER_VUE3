@@ -59,7 +59,7 @@ export default {
           if(i == 0 || arr1[i].top != arr1[i - 1].top ) {
             
             if(i > 0) {
-              let top1 = arr1[i - 1].top, top2 = arr1[i].top;
+              let top1 = arr1[i - 1].top + this.$cellHeight, top2 = arr1[i].top;
               while (top1 < top2) { // 空白列
                 arr2.push([]);
                 top1 += this.$cellHeight;
@@ -130,7 +130,7 @@ export default {
               for(let key in row.props) {
                 props += (props.length > 1 ? ";" : "") + key + "=" + row.props[key];
               }
-              line += `[${title}${props}]`
+              line += `[${title}${props}]`;
             }
           }
           sectionResult += line + "\n";
@@ -139,7 +139,7 @@ export default {
           result += (typeof flag == "string" ? (flag + "\n") : "") + sectionResult;
         }
       }
-      console.log(result)
+      // console.log(result)
 
 
       return result;
