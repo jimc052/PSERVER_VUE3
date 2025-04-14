@@ -140,6 +140,7 @@ app.use(ViewUIPlus)
     {title: "交易明細", data: [
       {title: "PLU_CODE"},
       {title: "PLU_NAME", jabezTitle: "PC_NAME"},
+      {title: "PC_ENAME", platform: 'JabezPOS'},
       {title: "PRICE"},
       {title: "CNT", jabezTitle: "COUNT"},
       {title: "TOTAL"},
@@ -337,6 +338,138 @@ app.use(ViewUIPlus)
     }
     // console.log(JSON.stringify(json));
     return json;
+  }
+
+  app.config.globalProperties.assembleToFile = (json, platform) => {
+    let groups = app.config.globalProperties.$groups;
+    let result = "", section;
+    let retrieve = (arr) => {
+      let arr1 = JSON.parse(JSON.stringify(arr)), arr2 = [];
+      for(let i = 0; i < arr1.length; i++) {
+        if(i == 0 || arr1[i].top != arr1[i - 1].top ) {
+          
+          if(i > 0) {
+            let top1 = arr1[i - 1].top + app.config.globalProperties.$cellHeight, top2 = arr1[i].top;
+            while (top1 < top2) { // 空白列
+              arr2.push([]);
+              top1 += app.config.globalProperties.$cellHeight;
+            }
+          }
+          arr2.push([])
+        }
+        arr2[arr2.length - 1].push(arr1[i])
+      }
+      arr2.forEach(el1 => {
+        el1.forEach(el2 => {
+          delete el2.top;
+          delete el2.left;
+          if(typeof el2.props == "object") {
+            if(el2.props.sz == "1") delete el2.props.size;
+            if(el2.props.al == "0") delete el2.props.al;
+            if(Object.keys(el2.props).length == 0) delete el2.props;
+          }
+        })
+      })
+      return arr2;
+    }
+    let findGroups = (tag) => {
+      // console.log(tag)
+      let result = [];
+      for(let i = 0; i < groups.length; i++) {
+        let title = groups[i].title;
+        let data = groups[i].data;
+        if(typeof groups[i].platform == "string" && platform != groups[i].platform) continue; 
+        for(let j = 0; j < data.length; j++) {
+          let item = data[j];
+          if(typeof item.platform == "string" && platform != item.platform) continue;
+          // console.log(item)
+          if(item.title == tag || item.tag == tag || item.jabezTitle == tag) {
+            if(typeof item.tag == "string")
+              result.push({title, tag: item.tag});
+            else if(typeof item.jabezTitle == "string" && platform == "JabezPOS")
+              result.push({title, tag: item.jabezTitle});
+            else 
+              result.push({title, tag})
+          }
+        }
+      }
+      // console.log(JSON.stringify(result))
+      return result;
+    }
+    if(typeof json["props"] == "object") {
+      if(json["props"].beep == true) {
+        result += "BEEP#\n"
+      }
+      if(typeof json["props"].prnSize == "number") { // ;[#PrnSize:80]
+        result += `;[#PrnSize:${json["props"].prnSize}]\n`
+      }
+    }
+
+    let sections = ["header", "detail", "footer1", "payment", "footer2"];
+    for(let i = 0; i < sections.length; i++) {
+      section = sections[i]; 
+      let sectionResult = "", flag;
+      if(section == "header") {
+        flag = "H#";
+      } else if(section == "detail") {
+        flag = "I#";
+      } else if(section == "payment") {
+        flag = "P#";
+      } else if(section == "footer1") {
+        flag = "F#";
+      }
+      // if(section != "header") continue;
+      // console.log(section)
+      let arr = [];
+      if(section == "detail"){
+        if(Array.isArray(json[section].items) && json[section].items.length > 0) { 
+          arr = retrieve(json[section].items)
+        }
+      } else if(Array.isArray(json[section]) && json[section].length > 0) { 
+        arr = retrieve(json[section])
+      }
+      for(let j = 0; j < arr.length; j++) {
+        let line = "";
+        for(let k = 0; k < arr[j].length; k++) {
+          let row = arr[j][k], title = row.title;
+          // console.log(JSON.stringify(row))
+          if(title == "自定文字") {
+            title = row.props.text;
+            delete row.props.text;
+            if(Object.keys(row.props).length == 0) {
+              line += title;
+              row = undefined
+            }
+          }
+          if(typeof row == "object") {
+            if(title.indexOf("#") == -1) {
+              let group = findGroups(title);
+              if(group.length > 0) {
+                if(group[0].tag != title) {
+                  title = group[0].tag;
+                }
+                if(section == "detail") {
+                  title = "I#" + title;
+                } else if(i >= 2 && group[0].title == "交易主檔") { //  
+                  title = "H#" + title;
+                }
+              }                
+            }
+            
+            let props = typeof row.props == "object" && Object.keys(row.props).length > 0 ? ":" : "";
+            for(let key in row.props) {
+              props += (props.length > 1 ? ";" : "") + key + "=" + row.props[key];
+            }
+            line += `[${title}${props}]`;
+          }
+        }
+        sectionResult += line + "\n";
+      }
+      if(sectionResult.length > 0) {
+        result += (typeof flag == "string" ? (flag + (flag == "P#" ? "" : "\n")) : "") + sectionResult;
+      }
+    }
+    return result;
   }
 }
 

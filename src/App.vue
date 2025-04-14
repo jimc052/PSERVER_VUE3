@@ -127,7 +127,16 @@ export default {
     onOpenDialog() {
       let width = document.body.clientWidth - 200;
       let height = document.body.clientHeight - 250;
-      let content = "還沒寫";
+      let json = {}, arr = ["header", "detail", "footer1", "payment", "footer1"];
+      for(let i = 0; i < arr.length; i++) {
+        let key = arr[i];
+        json[key] = this.$refs[key].items;
+      }
+      arr.forEach(el => {
+        if (typeof el != "undefined" && typeof el.items == "object")
+          count += el.items.length;
+      });
+      let content = this.assembleToFile(json, this.platform);
       this.$Modal.info({
         // title: "Success",
         width: width + 50,
