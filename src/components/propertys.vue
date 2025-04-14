@@ -62,8 +62,30 @@ export default {
     })
     this.onResize();
 
+    this.$mybus.on("section-props", e => {
+      this.title = e.zone;
+      this.id = e.zone;
+      // console.log("section-" + e.zone)
+      // console.log(this.$properties["section-" + e.zone])
+
+      if(typeof this.$properties["section-" + e.zone] == "object") {
+        // console.log(1)
+        this.draggedItem = Object.assign({}, this.$properties["section-" + e.zone]);
+      } else {
+        this.draggedItem = {};
+      }
+      for(let key in e.props) {
+        if(typeof e.props[key] == "undefined") {
+          this.draggedItem[key] = {title: key,value: e.props[key]};
+        }
+        else
+          this.draggedItem[key].value = e.props[key];
+      }
+      // console.log(JSON.stringify(this.draggedItem, null, 2))
+    });
+
     this.$mybus.on("item", e => {
-      console.log(JSON.stringify(e, null, 2))
+      // console.log(JSON.stringify(e, null, 2))
       this.draggedItem = null;
       this.title = e.item.title;
       this.id = e.item.id;
@@ -87,6 +109,7 @@ export default {
       if(! (this.platform == "new2POS" && (e.item.title == "TASK_NM" || e.item.title == "PLU_NAME"))) {
         delete this.draggedItem.key;
       }
+      // console.log(JSON.stringify(this.draggedItem, null, 2))
       
       for(let key in this.draggedItem) {
         if(typeof e.item.props == "object") {
@@ -95,6 +118,7 @@ export default {
           this.draggedItem[key].value = undefined;
         }
       }
+      // console.log(JSON.stringify(this.draggedItem, null, 2))
     })
 
     this.$mybus.on('delAll', e => {
@@ -120,6 +144,7 @@ export default {
       for(let key in this.draggedItem) {
         obj.props[key] = this.draggedItem[key].value;
       }
+      // console.log(JSON.stringify(obj, null, 2))
       this.$mybus.emit('item-update', obj);
     }
   },

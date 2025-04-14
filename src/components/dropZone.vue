@@ -1,9 +1,12 @@
 <template>
   <div class="container" :class="{gradient: items.length > 0}" ref="zone" 
     @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
+    @dblclick="onDoubleClick"
   >
     <div class="placeholder-text" v-if="items.length == 0">
-      {{ zone }}
+      <div>{{ zone }}</div>
+      <div v-if="zone == 'header' || zone == 'detail'">
+        {{"Double Clcik to Edit"}}</div>
     </div>
    
     <div v-for="(el, index) in items" :key="index" draggable="true" 
@@ -46,6 +49,7 @@ export default {
     return {
       items: [
       ],
+      prop: undefined,
       draggedItem: null,
       active: -1
     };
@@ -74,19 +78,32 @@ export default {
       }
     })
     this.$mybus.on("item-update", e => {
-      console.log(JSON.stringify(e, null, 2))
-      if(e.zone == this.zone) {
+      // console.log(JSON.stringify(e, null, 2))
+      if(e.id == this.zone) {
+        this.prop = e.props;
+      } else if(e.zone == this.zone) {
         let index = this.items.findIndex(el => el.id == e.id);
         if(index != -1) {
           this.items[index].props = e.props;
         }
       }
     })
-
     // this.$mybus.emit('item-update', obj);
   },
   unmounted() {},
   methods: {
+    onDoubleClick() {
+      if((this.zone == "detail" || this.zone == "header") && this.items.length > 0 ) {
+        if(typeof this.prop == "object") {
+          delete this.prop.text;
+        }
+        
+        this.$mybus.emit('section-props', {
+          zone: this.zone,
+          props: this.prop,
+        });
+      }
+    },
     clickItem(index, item, e) {
       this.$mybus.emit('item', {
         zone: this.zone,
@@ -184,11 +201,20 @@ export default {
   .placeholder-text {
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 25px;;
+    font-size: 25px;
     background: var(--background1);
     color: var(--color1);
+
+  }
+  .placeholder-text > div:nth-child(1) {
+    font-weight: 900;
+  }
+  .placeholder-text > div:nth-child(2) {
+    font-size: 20px;
+    color: var(--color2);
   }
 
   .item {

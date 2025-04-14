@@ -22,18 +22,32 @@ app.use(ViewUIPlus)
   app.config.globalProperties.$isLocal = location.href.indexOf("192.168") > -1 || location.href.indexOf("idx-pservervue3git-") > -1 ;
 
   app.config.globalProperties.$properties = {
+    "section-detail": {
+      ord: {
+        title: "品項加總",
+        placeholder: "相同品項, 商品數量加總",
+        options: [
+          { value: 0, label: "否" },
+          { value: 1, label: "是" }
+        ]
+      },
+      qrd: {
+        title: "品項排序",
+        placeholder: "相同品項, 排序",
+        options: [
+          { value: 0, label: "否" },
+          { value: 1, label: "是" }
+        ]
+      },
+      // prc: {
+      // }
+    },
     N_LINES: {
       nl: {
         title: "空白列",
         placeholder: "請輸入數字"
       },
     },
-    // "自定文字": {
-    //   text: {
-    //     title: "文字",
-    //     placeholder: "請輸入內容"
-    //   },
-    // },
     default: {
       sz: {
         title: "字體大小",

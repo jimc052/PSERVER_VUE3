@@ -124,13 +124,16 @@ export default {
 
       this.itemCount = count;
     },
-    onOpenDialog() {
-      let width = document.body.clientWidth - 200;
-      let height = document.body.clientHeight - 250;
-      let json = {}, arr = ["header", "detail", "footer1", "payment", "footer1"];
+    onOpenDialog() { // 將 JSON 轉成文字檔
+      let count = 0;
+      let width = document.body.clientWidth - 100;
+      let height = document.body.clientHeight - 140;
+      let json = {}, arr = ["header", "detail", "footer1", "payment", "footer2"];
       for(let i = 0; i < arr.length; i++) {
         let key = arr[i];
         json[key] = this.$refs[key].items;
+        if(key == "detail")
+          json[key].props = this.$refs[key].prop
       }
       arr.forEach(el => {
         if (typeof el != "undefined" && typeof el.items == "object")
@@ -164,6 +167,7 @@ export default {
         },
         // onOk: () => { alert(`Hello, ${this.value}`)}
       })
+      document.querySelector(".ivu-modal").style.top = "10px"
     },
     onUpload() {
       this.$refs.fileInput.click();
@@ -195,19 +199,23 @@ export default {
       reader.readAsText(file);
       event.target.value = null;
     },
-    parseFile(str) {
+    parseFile(str) { // 檔案內容，轉成 JSON 
       let result = this.$parseText(str);
+      console.clear(); // console.log(JSON.stringify(result, null, 2))
       if (typeof result == "object") {
         for (let key in result) {
           if (key == "props") {
-            continue;
+            console.log(result[key])
+            this.$refs["header"].prop = result[key]; 
           } else if (key == "detail") {
-            this.$refs[key].items = result[key].items
+            this.$refs[key].items = result[key].items;
+            this.$refs[key].prop = result[key].props;
           } else if(typeof result[key] == "object"){
-            this.$refs[key].items = result[key]
+            this.$refs[key].items = result[key];
           }
         }
       }
+      console.log(JSON.stringify(result, null, 2))
       this.count();
     },
     onClickTrash() {
