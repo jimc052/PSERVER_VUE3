@@ -1,7 +1,6 @@
 <template>
   <div id="menu-frame" style="background: var(--background2)">
     <div v-for="(el, index) in $groups" :key="index" :class="{'group-list': index == cursor}">
-      
         <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
           <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
           <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
@@ -17,8 +16,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div style="flex: 1; "></div> -->
     </div>
   </div>
 </template>

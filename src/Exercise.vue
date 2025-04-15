@@ -1,6 +1,10 @@
 <template>
   <div id="header">
-    <Button type="success" @click="onClick">轉換</Button>
+    <RadioGroup v-model="platform" type="button" button-style="solid">
+      <Radio label="JabezPOS"></Radio>
+      <Radio label="new2POS"></Radio>
+    </RadioGroup>
+    <Button type="success" @click="onClick"  style="margin-left: 30px;">轉換</Button>
     <div style="flex: 1;"></div>
     <Button type="warning" icon="md-swap" style="margin-left: 10px;" 
       @click="onClickSwap"/>
@@ -19,12 +23,13 @@ export default {
   components: {},
   data() {
     return {
+      platform: "JabezPOS",
     };
   },
   created() {
   },
   async mounted() {
-    this.$refs.textarea1.value = localStorage.getItem("PSERVER");
+    this.$refs.textarea1.value = localStorage.getItem("Exercise-PSERVER");
     if(this.$refs.textarea1.value.trim().length > 0)
       this.onClick()
   },
@@ -35,7 +40,7 @@ export default {
       let s = this.$refs.textarea1.value.trim(), result = "";
       if(s.indexOf("{") == 0) {
         let json = JSON.parse(s);
-        result = this.$assembleToFile(json, "new2POS");
+        result = this.$assembleToFile(json, this.platform);
 
       } else {
         let json = this.$parseText(this.$refs.textarea1.value.trim());
@@ -45,7 +50,7 @@ export default {
       this.$refs.textarea2.value = result;
     },
     onInput(){
-      localStorage.setItem("PSERVER", this.$refs.textarea1.value)
+      localStorage.setItem("Exercise-PSERVER", this.$refs.textarea1.value)
     },
     onClickSwap() {
       localStorage.setItem("page", "App");
