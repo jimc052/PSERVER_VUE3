@@ -1,21 +1,24 @@
 <template>
   <div id="menu-frame" style="background: var(--background2)">
     <div v-for="(el, index) in $groups" :key="index" :class="{'group-list': index == cursor}">
-      <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
-        <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
-        <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
-      </div>
-      <div v-if="index == cursor" style="flex: 1;">
-        <div class="detail-list">
-          <div v-for="(el2, index2) in el.data" :key="index2">
-            <div v-if="el2.title.length > 0 && (typeof el2.platform == 'undefined' || (el2.platform == this.platform)) " class="detail" 
-              draggable="true" 
-              @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
-              {{this.platform == "JabezPOS" && typeof el2.jabezTitle == "string" ? el2.jabezTitle : el2.title}}
+      
+        <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
+          <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
+          <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
+        </div>
+        <div v-if="index == cursor" style="flex: 1;">
+          <div class="detail-list">
+            <div v-for="(el2, index2) in el.data" :key="index2">
+              <div v-if="el2.title.length > 0 && (typeof el2.platform == 'undefined' || (el2.platform == this.platform)) " class="detail" 
+                draggable="true" 
+                @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
+                {{this.platform == "JabezPOS" && typeof el2.jabezTitle == "string" ? el2.jabezTitle : el2.title}}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        <!-- <div style="flex: 1; "></div> -->
     </div>
   </div>
 </template>

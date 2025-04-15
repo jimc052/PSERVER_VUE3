@@ -22,6 +22,25 @@ app.use(ViewUIPlus)
   app.config.globalProperties.$isLocal = location.href.indexOf("192.168") > -1 || location.href.indexOf("idx-pservervue3git-") > -1 ;
 
   app.config.globalProperties.$properties = {
+    "section-header": {
+      beep: {
+        title: "beep",
+        placeholder: "請選擇",
+        options: [
+          { value: 0, label: "否" },
+          { value: 1, label: "是" }
+        ]
+      },
+      prnSize: {
+        title: "出單紙",
+        placeholder: "請選擇",
+        options: [
+          { value: 0, label: "57cm" },
+          { value: 1, label: "80cm" }
+        ]
+      },
+    },
+
     "section-detail": {
       ord: {
         title: "品項加總",
@@ -153,10 +172,11 @@ app.use(ViewUIPlus)
     ]},
     {title: "交易明細", data: [
       {title: "PLU_CODE"},
-      {title: "PLU_NAME", jabezTitle: "PC_NAME"},
+      {title: "PLU_NAME"},
+      {title: "PC_NAME", platform: 'JabezPOS'},
       {title: "PC_ENAME", platform: 'JabezPOS'},
       {title: "PRICE"},
-      {title: "CNT", jabezTitle: "COUNT"},
+      {title: "CNT"},
       {title: "TOTAL"},
       {title: "TASK_NM"},
       {title: "FEEDING_NM", platform: 'JabezPOS'},
@@ -281,7 +301,7 @@ app.use(ViewUIPlus)
     for(let i = 0; i < str.length; i++) {
       let lines = str[i];
       if(lines == "BEEP#") {
-        json.props.beep = true;
+        json.props.beep = 1;
         continue;
       }
       else if(lines == ";[#PrnSize:") {
@@ -354,7 +374,7 @@ app.use(ViewUIPlus)
     return json;
   }
 
-  app.config.globalProperties.assembleToFile = (json, platform) => {
+  app.config.globalProperties.$assembleToFile = (json, platform) => {
     let groups = app.config.globalProperties.$groups;
     let result = "", section;
     let retrieve = (arr) => {
@@ -415,7 +435,9 @@ app.use(ViewUIPlus)
         result += "BEEP#\n"
       }
       if(typeof json["props"].prnSize == "number") { // ;[#PrnSize:80]
-        result += `;[#PrnSize:${json["props"].prnSize}]\n`
+        if(json["props"].prnSize == 1) {
+          result += `;[#PrnSize:80]\n`
+        }
       }
     }
 
@@ -432,10 +454,11 @@ app.use(ViewUIPlus)
       } else if(section == "footer1") {
         flag = "F#";
       }
-      // if(section != "header") continue;
-      // console.log(section)
+      // if(section != "detail") continue;
+      // console.clear(); console.log(section); console.log(JSON.stringify(json[section], null, 2))
       let arr = [];
       if(section == "detail"){
+        // console.log(Array.isArray(json[section].items))
         if(Array.isArray(json[section].items) && json[section].items.length > 0) { 
           arr = retrieve(json[section].items)
         }
@@ -478,6 +501,7 @@ app.use(ViewUIPlus)
           }
         }
         sectionResult += line + "\n";
+        // console.log(sectionResult)
       }
       if(sectionResult.length > 0) {
         result += (typeof flag == "string" ? (flag + (flag == "P#" ? "" : "\n")) : "") + sectionResult;

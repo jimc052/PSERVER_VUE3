@@ -125,21 +125,25 @@ export default {
       this.itemCount = count;
     },
     onOpenDialog() { // 將 JSON 轉成文字檔
-      let count = 0;
       let width = document.body.clientWidth - 100;
       let height = document.body.clientHeight - 140;
       let json = {}, arr = ["header", "detail", "footer1", "payment", "footer2"];
       for(let i = 0; i < arr.length; i++) {
         let key = arr[i];
+        // if(key != "detail") continue;
         json[key] = this.$refs[key].items;
-        if(key == "detail")
-          json[key].props = this.$refs[key].prop
+        if(key == "detail") {
+          json[key].items = this.$refs[key].items;
+          json[key].props = this.$refs[key].prop;
+        }else {
+          json[key] = this.$refs[key].items;
+          if(key == "header")
+            json["props"] = this.$refs[key].prop;
+        }
       }
-      arr.forEach(el => {
-        if (typeof el != "undefined" && typeof el.items == "object")
-          count += el.items.length;
-      });
-      let content = this.assembleToFile(json, this.platform);
+      // console.log(JSON.stringify(json, null, 2))
+
+      let content = this.$assembleToFile(json, this.platform);
       this.$Modal.info({
         // title: "Success",
         width: width + 50,
@@ -205,8 +209,8 @@ export default {
       if (typeof result == "object") {
         for (let key in result) {
           if (key == "props") {
-            console.log(result[key])
-            this.$refs["header"].prop = result[key]; 
+            this.$refs["header"].prop = result[key];
+            continue;
           } else if (key == "detail") {
             this.$refs[key].items = result[key].items;
             this.$refs[key].prop = result[key].props;
@@ -215,7 +219,7 @@ export default {
           }
         }
       }
-      console.log(JSON.stringify(result, null, 2))
+      // console.log(JSON.stringify(result, null, 2))
       this.count();
     },
     onClickTrash() {

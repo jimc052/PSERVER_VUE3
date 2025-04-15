@@ -69,19 +69,21 @@ export default {
       // console.log(this.$properties["section-" + e.zone])
 
       if(typeof this.$properties["section-" + e.zone] == "object") {
-        // console.log(1)
         this.draggedItem = Object.assign({}, this.$properties["section-" + e.zone]);
       } else {
         this.draggedItem = {};
       }
-      for(let key in e.props) {
-        if(typeof e.props[key] == "undefined") {
-          this.draggedItem[key] = {title: key,value: e.props[key]};
+      if(typeof e.props == "object") {
+        for(let key in e.props) {
+          if(typeof e.props[key] == "undefined") {
+            this.draggedItem[key] = {title: key,value: e.props[key]};
+          } else if(typeof this.draggedItem[key] == "undefined") {
+            this.draggedItem[key] = {title: key, value: e.props[key]};
+          } else {
+            this.draggedItem[key].value = e.props[key];
+          }
         }
-        else
-          this.draggedItem[key].value = e.props[key];
       }
-      // console.log(JSON.stringify(this.draggedItem, null, 2))
     });
 
     this.$mybus.on("item", e => {

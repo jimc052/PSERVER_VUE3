@@ -93,6 +93,7 @@ export default {
   unmounted() {},
   methods: {
     onDoubleClick() {
+      // console.log(this.prop)
       if((this.zone == "detail" || this.zone == "header") && this.items.length > 0 ) {
         if(typeof this.prop == "object") {
           delete this.prop.text;
