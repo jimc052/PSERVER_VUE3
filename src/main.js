@@ -420,11 +420,9 @@ app.use(ViewUIPlus)
           let item = data[j];
           if(typeof item.platform == "string" && platform != item.platform) continue;
           // console.log(item)
-          if(item.title == tag || item.tag == tag || item.jabezTitle == tag) {
+          if(item.title == tag || item.tag == tag) {
             if(typeof item.tag == "string")
               result.push({title, tag: item.tag});
-            else if(typeof item.jabezTitle == "string" && platform == "JabezPOS")
-              result.push({title, tag: item.jabezTitle});
             else 
               result.push({title, tag})
           }

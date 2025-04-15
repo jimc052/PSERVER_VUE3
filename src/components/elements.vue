@@ -1,6 +1,6 @@
 <template>
   <div id="menu-frame" style="background: var(--background2)">
-    <div v-for="(el, index) in $groups" :key="index" :class="{'group-list': index == cursor}">
+    <div v-for="(el, index) in groups" :key="index" :class="{'group-list': index == cursor}">
         <div class="group" @mousedown="cursor = (cursor == index ? -1 : index)">
           <div style="flex: 1" :class="{'title-active': index == cursor}">{{el.title}}</div>
           <Icon :type="index == cursor ? 'ios-arrow-up' : 'ios-arrow-down'" />
@@ -11,7 +11,7 @@
               <div v-if="el2.title.length > 0 && (typeof el2.platform == 'undefined' || (el2.platform == this.platform)) " class="detail" 
                 draggable="true" 
                 @dragstart="dragStart($event, el2)" @dragend="dragEnd($event, el2)">
-                {{this.platform == "JabezPOS" && typeof el2.jabezTitle == "string" ? el2.jabezTitle : el2.title}}
+                {{el2.title}}
               </div>
             </div>
           </div>
@@ -32,6 +32,7 @@ export default {
     return {
       cursor: 0,
       platform: "",
+      groups: []
     }
   },
   created() {
@@ -44,8 +45,14 @@ export default {
     })
     this.$mybus.on('platform', e => {
       this.platform = e;
+
+      this.groups = this.$groups.filter(el => {
+        return typeof el.platform == 'undefined' || el.platform == this.platform; 
+      });
+      this.cursor = 0;
+      this.onResize();
     })
-    this.onResize();
+    // this.onResize();
   },
   unmounted() {
     // this.$mybus.off('resize');
@@ -66,7 +73,7 @@ export default {
     },
     dragStart(event, item) {
       event.dataTransfer.effectAllowed = "copy";
-      let group = this.cursor == -1 ? "" : this.$groups[this.cursor].title;
+      let group = this.cursor == -1 ? "" : this.groups[this.cursor].title;
       this.$mybus.emit('sourceDragStart', Object.assign({group}, item));
     },
     dragEnd(event, item) {
