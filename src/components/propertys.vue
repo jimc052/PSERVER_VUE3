@@ -4,35 +4,35 @@
     <div class="section" ref="section">
       <div class="table-frame" ref="tableFrame" v-if="draggedItem != null">
         <table v-if="draggedItem">
-          <tr v-for="(value, key, index) in draggedItem" :key="index">
-            <td style="min-width: 85px;">{{ value.title }}</td>
+          <tr v-for="(item, key, index) in draggedItem" :key="index">
+            <td style="min-width: 85px;">{{ item.title }}</td>
             <td>
-              <div v-if="typeof value.cols == 'number' " style="display: flex; flex-direction: row;">
-                <Input v-model="value.value1"  :placeholder="value.placeholder1" 
-                  @on-change="onChange(key, value, $event)"
+              <div v-if="typeof item.cols == 'number' " style="display: flex; flex-direction: row;">
+                <Input v-model="item.value1"  :placeholder="item.placeholder1" 
+                  @on-change="onChange(key, value1, $event)"
                 />
-                <Input style="margin-left: 5px;" v-model="value.value2" :placeholder="value.placeholder2" 
-                  @on-change="onChange(key, value, $event)"
+                <Input style="margin-left: 5px;" v-model="item.value2" :placeholder="item.placeholder2" 
+                  @on-change="onChange(key, value2, $event)"
                 />
               </div>
 
-              <Select v-else-if="Array.isArray(value.options)" v-model="value.value" 
-                :placeholder="value.placeholder"
+              <Select v-else-if="Array.isArray(item.options)" v-model="item.value" 
+                :placeholder="item.placeholder"
                 @on-change="onChange(key, value, $event)"
               >
-                  <Option v-for="item in value.options" :value="item.value" :key="item.value">
-                    {{ item.label }}
+                  <Option v-for="option in item.options" :value="option.value" :key="option.value">
+                    {{ option.label }}
                   </Option>
               </Select>
 
-              <Input v-else v-model="value.value" :placeholder="value.placeholder"
+              <Input v-else v-model="item.value" :placeholder="item.placeholder"
                 @on-change="onChange(key, value, $event)" />
             </td>
           </tr>
         </table>
       </div>
     </div>
-    <div class="footer"></div>
+    <!-- <div class="footer"></div> -->
   </div>
 </template>
 
@@ -89,6 +89,12 @@ export default {
     this.$mybus.on("item", e => {
       // console.log(JSON.stringify(e, null, 2))
       this.draggedItem = null;
+      if(e == null) {
+        this.id = ""; this.title = "";
+        zone = null;
+        return;
+      } 
+
       this.title = e.item.title;
       this.id = e.item.id;
       zone = e.zone;
@@ -102,25 +108,41 @@ export default {
           }
         }
       }
+      // console.log(JSON.stringify(this.draggedItem["Cpy"], null, 2))
 
       if(typeof this.$properties[e.item.title] == "object") {
-        this.draggedItem = Object.assign(json, this.$properties[e.item.title]);
+        json = Object.assign(json, this.$properties[e.item.title]);
       } else {
-        this.draggedItem = Object.assign(json, this.$properties["default"]);
+        json = Object.assign(json, this.$properties["default"]);
       }
-      if(! (this.platform == "new2POS" && (e.item.title == "TASK_NM" || e.item.title == "PLU_NAME"))) {
-        delete this.draggedItem.key;
+      if(! (this.platform == "new2POS" && ("TASK_NM,PC_NAME,PLU_NAME".indexOf(e.item.title) != -1))) {
+        delete json.key;
       }
+      this.draggedItem = json;
       // console.log(JSON.stringify(this.draggedItem, null, 2))
+      console.clear();
       
       for(let key in this.draggedItem) {
         if(typeof e.item.props == "object") {
-          this.draggedItem[key].value = typeof e.item.props[key] == "undefined" ? undefined : e.item.props[key];
+          if(typeof this.draggedItem[key].cols == "number") {
+            if(typeof e.item.props[key] != "undefined") {
+              let arr = e.item.props[key].split(",");
+              this.draggedItem[key].value1 = arr[0];
+              this.draggedItem[key].value2 = arr.length == 2 ? arr[1] : "";              
+            } else {
+              this.draggedItem[key].value1 = "";
+              this.draggedItem[key].value2 = "";
+            }
+          } else 
+            this.draggedItem[key].value = typeof e.item.props[key] == "undefined" ? undefined : e.item.props[key];
         } else {
+          if(this.draggedItem[key].value1 != undefined)
+            this.draggedItem[key].value1 = undefined;
+          else if(this.draggedItem[key].value2 != undefined)
+            this.draggedItem[key].value2 = undefined;
           this.draggedItem[key].value = undefined;
         }
       }
-      // console.log(JSON.stringify(this.draggedItem, null, 2))
     })
 
     this.$mybus.on('delAll', e => {
@@ -144,7 +166,16 @@ export default {
     onChange(key, value, event) {
       let obj = {id: this.id, zone, props: {}}
       for(let key in this.draggedItem) {
-        obj.props[key] = this.draggedItem[key].value;
+        if(typeof this.draggedItem[key].cols == "number") {
+          let value1 = typeof this.draggedItem[key].value1 == "undefined" ? "" : this.draggedItem[key].value1;
+          let value2 = typeof this.draggedItem[key].value2 == "undefined" ? "" : this.draggedItem[key].value2;
+          
+          obj.props[key] = value1.length > 0 || value2.length > 0 ? value1 + "," + value2 : "";
+          // console.log(JSON.stringify(this.draggedItem[key], null, 2))
+          console.log(obj.props[key])
+        } else {
+          obj.props[key] = this.draggedItem[key].value;
+        }
       }
       // console.log(JSON.stringify(obj, null, 2))
       this.$mybus.emit('item-update', obj);
@@ -171,6 +202,7 @@ export default {
   padding: 5px 0px;
   font-size: 20px;
   text-align: center;
+  border-bottom: var(--color2) 3px solid;
 }
 
 .section {
@@ -208,5 +240,6 @@ td {
   color: var(--color1);
   background-color: var(--background1);
   height: 40px;
+  border-top: var(--color2) 3px solid;
 }
 </style>

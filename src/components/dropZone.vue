@@ -66,22 +66,31 @@ export default {
       this.draggedItem = null;
     });
 
+    this.$mybus.on('item-del', e => {
+      if(this.active != -1) {
+        this.items.splice(this.active, 1);
+        this.active = -1;
+        this.draggedItem = null;
+        this.$mybus.emit('item', null);
+      }
+    });
+
     this.$mybus.on('delAll', e => {
       this.items = [];
       this.active = -1;
       this.draggedItem = null;
     });
     this.$mybus.on("item", e => {
-      if(e.zone != this.zone) {
+      if(e != null && e.zone != this.zone) {
         this.draggedItem = null;
         this.active = -1;
       }
     })
     this.$mybus.on("item-update", e => {
-      // console.log(JSON.stringify(e, null, 2))
       if(e.id == this.zone) {
         this.prop = e.props;
       } else if(e.zone == this.zone) {
+        console.log(JSON.stringify(e.props, null, 2))
         let index = this.items.findIndex(el => el.id == e.id);
         if(index != -1) {
           this.items[index].props = e.props;
@@ -92,9 +101,10 @@ export default {
   },
   unmounted() {},
   methods: {
-    onDoubleClick() {
-      // console.log(this.prop)
-      if((this.zone == "detail" || this.zone == "header") && this.items.length > 0 ) {
+    onDoubleClick(event) {
+      if(event.target.className.indexOf("container") == -1)
+        return;
+      else if((this.zone == "detail" || this.zone == "header") && this.items.length > 0 ) {
         if(typeof this.prop == "object") {
           delete this.prop.text;
         }
@@ -188,13 +198,17 @@ export default {
   .gradient {
     background: var(--background1);
 
-    /* background-image: radial-gradient(var(--color1) 1px, transparent 0);
-    background-size: 20px 20px; */
+    background-image: radial-gradient(circle, var(--color2) 1px, transparent 0);
+    background-size: 20px 20px;
+    background-position: 10px 10px;
+    /**/
 
+    /*
     background-image:
     linear-gradient(to bottom, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px),
     linear-gradient(to right, var(--color2) 0px, var(--color2) 1px, transparent 1px, transparent 20px);
     background-size: 20px 20px;
+    */
 
     position: relative;
   }
@@ -208,7 +222,6 @@ export default {
     font-size: 25px;
     background: var(--background1);
     color: var(--color1);
-
   }
   .placeholder-text > div:nth-child(1) {
     font-weight: 900;
@@ -221,7 +234,8 @@ export default {
   .item {
     position: absolute;
     /* border: 1px solid #2db7f5; */
-    border-radius: 5px;
+    border-radius: 10px;
+    /* height: 40px; */
     padding: 5px;
     cursor: move;
     text-align: center;

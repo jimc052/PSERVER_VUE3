@@ -40,7 +40,7 @@ export default {
       let s = this.$refs.textarea1.value.trim(), result = "";
       if(s.indexOf("{") == 0) {
         let json = JSON.parse(s);
-        result = this.$assembleToFile(json, this.platform);
+        result = this.$assembleToText(json, this.platform);
 
       } else {
         let json = this.$parseText(this.$refs.textarea1.value.trim());

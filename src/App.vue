@@ -109,6 +109,14 @@ export default {
     this.$mybus.on('delAll', e => {
       this.itemCount = 0;
     });
+
+    window.onkeydown = (event) => {
+      let apple = navigator.userAgent.indexOf('Macintosh') > -1;
+      let pk = apple ? event.metaKey : event.ctrlKey;
+      if (event.key === "Delete" || pk && event.key === "Backspace") {
+        this.$mybus.emit("item-del");
+      }
+    }
   },
   unmounted() {
   },
@@ -143,7 +151,7 @@ export default {
       }
       // console.log(JSON.stringify(json, null, 2))
 
-      let content = this.$assembleToFile(json, this.platform);
+      let content = this.$assembleToText(json, this.platform);
       this.$Modal.info({
         // title: "Success",
         width: width + 50,

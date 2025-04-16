@@ -377,14 +377,23 @@ app.use(ViewUIPlus)
     return json;
   }
 
-  app.config.globalProperties.$assembleToFile = (json, platform) => {
+  app.config.globalProperties.$assembleToText = (json, platform) => {
     let groups = app.config.globalProperties.$groups;
     let result = "", section;
     let retrieve = (arr) => {
       let arr1 = JSON.parse(JSON.stringify(arr)), arr2 = [];
+      arr1.sort((a, b) => {
+        let x = String(a.top).padStart(6, '0') + "," + String(a.left).padStart(6, '0');
+        let y = String(b.top).padStart(6, '0') + "," + String(b.left).padStart(6, '0');
+        if(x < y) 
+          return -1;
+        else if(x > y) 
+          return 1;
+        else 
+          return 0;
+      });
       for(let i = 0; i < arr1.length; i++) {
         if(i == 0 || arr1[i].top != arr1[i - 1].top ) {
-          
           if(i > 0) {
             let top1 = arr1[i - 1].top + app.config.globalProperties.$cellHeight, top2 = arr1[i].top;
             while (top1 < top2) { // 空白列
