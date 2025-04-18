@@ -1,5 +1,6 @@
 <template>
-  <div class="container" :class="{gradient: items.length > 0}" ref="zone" 
+  <div class="container" :class="{gradient: items.length > 0, acceptable: acceptable}" 
+    ref="zone" 
     @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
     @dblclick="onDoubleClick"
   >
@@ -14,6 +15,7 @@
         @dragover="dragOverItem(index, el, $event)" 
         @dragenter="dragEnterItem(index, el, $event)"
         @dragleave="dragLeaveItem(index, el, $event)"
+        @drop="dropItem(index, el, $event)"
         v-on:click="clickItem(index, el, $event)"
         class="item" 
         :class="{
@@ -51,19 +53,32 @@ export default {
       ],
       prop: undefined,
       draggedItem: null,
-      active: -1
+      active: -1,
+      acceptable: false,
     };
   },
   created() {
   },
   async mounted() {
     this.$mybus.on('sourceDragStart', e => {
-      groupSource = ("付款資料" == e.group || "交易明細" == e.group) ? e.group : ""; 
+      groupSource = ("付款資料" == e.group || "交易明細" == e.group) ? e.group : "";
       dropEffect = typeof e.zone == "string" && e.zone == "any" ? "copy" : undefined;
       this.draggedItem = {title: e.title};
+
+      if(e.zone == "any")
+        this.acceptable = true;
+      else if(("付款資料,交易明細".indexOf(this.group) > -1) && (this.group != groupSource)) {
+        this.acceptable = false;
+      }
+      else if(("付款資料,交易明細".indexOf(groupSource) > -1) && (this.group != groupSource)) {
+        this.acceptable = false;
+      } else {
+        this.acceptable = true;
+      }
     });
     this.$mybus.on('sourceDragEnd', e => {
       this.draggedItem = null;
+      this.acceptable = false;
     });
 
     this.$mybus.on('item-del', e => {
@@ -131,11 +146,8 @@ export default {
 
       if(typeof dropEffect != "undefined")
         event.dataTransfer.dropEffect = dropEffect
-      else {
-        if(("付款資料" == this.group || "交易明細" == this.group) && (this.group != groupSource))
-          event.dataTransfer.dropEffect = "none"; // "none" 不允許放置
-        else if(("付款資料" == groupSource || "交易明細" == groupSource) && (this.group != groupSource))
-          event.dataTransfer.dropEffect = "none"; // "none" 不允許放置
+      else if(this.acceptable == false) {
+        event.dataTransfer.dropEffect = "none";
       } 
     },
     dropZone(event) {
@@ -179,6 +191,12 @@ export default {
     dragLeaveItem(index, item, event) {
       event.srcElement.classList.remove("item-focus")
     },
+    dropItem(index, item, event) {
+      let arr = document.querySelectorAll(".item");
+      arr.forEach(el => {
+        el.classList.remove("item-focus");
+      });
+    }
   },
   computed: {
   },
@@ -233,9 +251,11 @@ export default {
 
   .item {
     position: absolute;
-    /* border: 1px solid #2db7f5; */
+    display: flex;
+    align-items: center;
+    justify-content: center;;
+    border: 1px solid #c5c8ce;
     border-radius: 10px;
-    /* height: 40px; */
     padding: 5px;
     cursor: move;
     text-align: center;
@@ -248,10 +268,31 @@ export default {
   }
   .item-focus {
     border: 1px dotted #ff9900;
+    background: #ff9900 !important;
+    color: var(--color2) !important;
   }
   .item-active {
     /* border: 1px solid orangered; */
     background-color: #5cadff;
     color: white;
   }
+  
+  .acceptable {
+    border: 5px solid #5cadff; /* 保持原來的樣式 */
+    animation: blink-border 1s step-end infinite;
+  }
+
+
+  @keyframes blink-border {
+  0% {
+    border-color: #5cadff; /* 開始顏色 */
+  }
+  50% {
+    border-color: transparent; /* 中間變透明 (或換成其他顏色) */
+  }
+  100% {
+    border-color: #5cadff; /* 回到開始顏色 */
+  }
+}
+
 </style>

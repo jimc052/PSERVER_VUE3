@@ -130,17 +130,16 @@ export default {
               this.draggedItem[key].value1 = arr[0];
               this.draggedItem[key].value2 = arr.length == 2 ? arr[1] : "";              
             } else {
-              this.draggedItem[key].value1 = "";
-              this.draggedItem[key].value2 = "";
+              delete this.draggedItem[key].value1;
+              delete this.draggedItem[key].value2;
             }
+            delete this.draggedItem[key].value;
           } else 
             this.draggedItem[key].value = typeof e.item.props[key] == "undefined" ? undefined : e.item.props[key];
         } else {
-          if(this.draggedItem[key].value1 != undefined)
-            this.draggedItem[key].value1 = undefined;
-          else if(this.draggedItem[key].value2 != undefined)
-            this.draggedItem[key].value2 = undefined;
-          this.draggedItem[key].value = undefined;
+          delete this.draggedItem[key].value1;
+          delete this.draggedItem[key].value2;
+          delete this.draggedItem[key].value;
         }
       }
     })
@@ -172,7 +171,7 @@ export default {
           
           obj.props[key] = value1.length > 0 || value2.length > 0 ? value1 + "," + value2 : "";
           // console.log(JSON.stringify(this.draggedItem[key], null, 2))
-          console.log(obj.props[key])
+          // console.log(obj.props[key])
         } else {
           obj.props[key] = this.draggedItem[key].value;
         }
