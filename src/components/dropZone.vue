@@ -151,23 +151,64 @@ export default {
       } 
     },
     dropZone(event) {
+      console.clear();
       if (this.draggedItem) {
         let rect = this.$refs["zone"].getBoundingClientRect();
-        const top = event.clientY - rect.top;
-        const left = event.clientX - rect.left;
+        let top = event.clientY - rect.top;
+        let left = event.clientX - rect.left;
         // console.log("dropZone: " + this.items.indexOf(this.draggedItem))
         if (this.items.indexOf(this.draggedItem) == -1) {
           this.draggedItem.id = Date.now();
           this.items.push(this.draggedItem);
-          this.active = this.items.length - 1;
+          // this.active = this.items.length - 1;
         }
+
+        let id = this.draggedItem.id;
+        top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
+        left = Math.floor(left / this.$cellWidth) * this.$cellWidth;
+        console.log(this.draggedItem.title + ", top: " + top + ", left: " + left)
+        this.draggedItem.top = top;
+        this.draggedItem.left = left;
+        this.items.sort((a, b) => {
+          let x = String(a.top).padStart(6, '0') + "," + String(a.left).padStart(6, '0');
+          let y = String(b.top).padStart(6, '0') + "," + String(b.left).padStart(6, '0');
+          if(x < y) 
+            return -1;
+          else if(x > y) 
+            return 1;
+          else 
+            return 0;
+        });
+        this.active = this.items.findIndex(el => el.id == id);
+        if(this.active == -1) this.active = 0;
+
+
+        this.items.forEach((el, index) => {
+          let mode = 0;
+          if(id == el.id) {
+            this.active = index;
+          } else if(el.top == top) {
+            if(el.left < left)
+              return;
+            if(el.left == left && el.id != id) {
+              el.left = left + this.$cellWidth;
+              mode = 1;
+            } else if(index > 0 && el.top == this.items[index - 1].top && el.left == this.items[index - 1].left) {
+              el.left = this.items[index].left + this.$cellWidth;
+              mode = 2;
+            } else if(index < this.items.length - 1 && el.top == this.items[index + 1].top && el.left == this.items[index + 1].left) {
+              el.left = this.items[index + 1].left + this.$cellWidth;
+              mode = 3;
+            }
+            console.log(el.title + ": " + el.left + ", mode: " + mode)
+          }
+        });
+
         this.$mybus.emit('item', {
           zone: this.zone,
           item: this.draggedItem,
           index: this.active
         });
-        this.draggedItem.top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
-        this.draggedItem.left = Math.floor(left / this.$cellWidth) * this.$cellWidth;
         this.draggedItem = null;
       }
     },

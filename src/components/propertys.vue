@@ -120,7 +120,7 @@ export default {
       }
       this.draggedItem = json;
       // console.log(JSON.stringify(this.draggedItem, null, 2))
-      console.clear();
+      // console.clear();
       
       for(let key in this.draggedItem) {
         if(typeof e.item.props == "object") {
