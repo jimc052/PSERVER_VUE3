@@ -52,7 +52,7 @@
               <DropZone zone="footer1" ref="footer1" />
             </div>
 
-            <DropZone group="付款資料" zone="payment" ref="payment" style="height: 50px; margin: 10px 0px;" />
+            <DropZone group="付款資料" zone="payment" ref="payment" style="height: 80px; margin: 10px 0px;" />
 
             <div style="flex: 1;">
               <DropZone zone="footer2" ref="footer2" />
@@ -211,19 +211,25 @@ export default {
       reader.readAsText(file);
       event.target.value = null;
     },
-    parseFile(str) { // 檔案內容，轉成 JSON 
+    parseFile(str) { // 檔案內容，轉成 JSON
+      let reorder = (items) => {
+        items.forEach((el, index) => {
+          el.id = index;
+        })
+        return items;
+      }
       let result = this.$parseText(str);
-      console.clear(); // console.log(JSON.stringify(result, null, 2))
+      // console.clear(); console.log(JSON.stringify(result, null, 2))
       if (typeof result == "object") {
         for (let key in result) {
           if (key == "props") {
             this.$refs["header"].prop = result[key];
             continue;
           } else if (key == "detail") {
-            this.$refs[key].items = result[key].items;
+            this.$refs[key].items = reorder(result[key].items);
             this.$refs[key].prop = result[key].props;
           } else if(typeof result[key] == "object"){
-            this.$refs[key].items = result[key];
+            this.$refs[key].items = reorder(result[key]);
           }
         }
       }

@@ -1,7 +1,8 @@
 <template>
-  <div class="container" :class="{gradient: items.length > 0, acceptable: acceptable}" 
+  <div class="container" :class="{gradient: items.length > 0, acceptable: acceptable}"
+    :style="{overflow: zone != 'payment' && items.length > 0 ? 'auto' : 'hidden'}" 
     ref="zone" 
-    @dragenter="dragEnterZone" @dragover="dragOverZone" @drop="dropZone"
+    @dragenter="dragEnterZone" @dragover="dragOverZone" @dragleave="dragLeaveZone" @drop="dropZone"
     @dblclick="onDoubleClick"
   >
     <div class="placeholder-text" v-if="items.length == 0">
@@ -141,6 +142,9 @@ export default {
     dragEnterZone(event) {
       event.preventDefault();
     },
+    dragLeaveZone(event) {
+      event.preventDefault();
+    },
     dragOverZone(event) {
       event.preventDefault();
 
@@ -153,9 +157,6 @@ export default {
     dropZone(event) {
       console.clear();
       if (this.draggedItem) {
-        let rect = this.$refs["zone"].getBoundingClientRect();
-        let top = event.clientY - rect.top;
-        let left = event.clientX - rect.left;
         // console.log("dropZone: " + this.items.indexOf(this.draggedItem))
         if (this.items.indexOf(this.draggedItem) == -1) {
           this.draggedItem.id = Date.now();
@@ -164,14 +165,21 @@ export default {
         }
 
         let id = this.draggedItem.id;
+
+        let rect = this.$refs["zone"].getBoundingClientRect();
+        let scrollTop = this.$refs["zone"].scrollTop;
+        let scrollLeft = this.$refs["zone"].scrollLeft;
+        let top = event.clientY - rect.top + scrollTop;
+        let left = event.clientX - rect.left + scrollLeft;
+
         top = Math.floor(top / this.$cellHeight) * this.$cellHeight;
         left = Math.floor(left / this.$cellWidth) * this.$cellWidth;
-        console.log(this.draggedItem.title + ", top: " + top + ", left: " + left)
         this.draggedItem.top = top;
         this.draggedItem.left = left;
+
         this.items.sort((a, b) => {
-          let x = String(a.top).padStart(6, '0') + "," + String(a.left).padStart(6, '0');
-          let y = String(b.top).padStart(6, '0') + "," + String(b.left).padStart(6, '0');
+          let x = String(a.top).padStart(6, '0') + "," + String(a.left).padStart(6, '0') + (a.id == id ? "0" : "1");
+          let y = String(b.top).padStart(6, '0') + "," + String(b.left).padStart(6, '0') + (b.id == id ? "0" : "1");
           if(x < y) 
             return -1;
           else if(x > y) 
@@ -182,9 +190,7 @@ export default {
         this.active = this.items.findIndex(el => el.id == id);
         if(this.active == -1) this.active = 0;
 
-
         this.items.forEach((el, index) => {
-          let mode = 0;
           if(id == el.id) {
             this.active = index;
           } else if(el.top == top) {
@@ -192,15 +198,11 @@ export default {
               return;
             if(el.left == left && el.id != id) {
               el.left = left + this.$cellWidth;
-              mode = 1;
             } else if(index > 0 && el.top == this.items[index - 1].top && el.left == this.items[index - 1].left) {
               el.left = this.items[index].left + this.$cellWidth;
-              mode = 2;
             } else if(index < this.items.length - 1 && el.top == this.items[index + 1].top && el.left == this.items[index + 1].left) {
               el.left = this.items[index + 1].left + this.$cellWidth;
-              mode = 3;
-            }
-            console.log(el.title + ": " + el.left + ", mode: " + mode)
+            } 
           }
         });
 
@@ -248,15 +250,31 @@ export default {
 
 <style scoped>
   .container {
+    background: var(--background1);
     height: 100%;
-    overflow: hidden;
     padding: 0px 0px;
     position: relative;
+    border: 3px solid transparent;
+  }
+
+  .acceptable {
+    border: 3px solid #5cadff; /* 保持原來的樣式 */
+    animation: blink-border 1s step-end infinite;
+  }
+
+  @keyframes blink-border {
+    0% {
+      border-color: #5cadff; /* 開始顏色 */
+    }
+    50% {
+      border-color: transparent; /* 中間變透明 (或換成其他顏色) */
+    }
+    100% {
+      border-color: #5cadff; /* 回到開始顏色 */
+    }
   }
 
   .gradient {
-    background: var(--background1);
-
     background-image: radial-gradient(circle, var(--color2) 1px, transparent 0);
     background-size: 20px 20px;
     background-position: 10px 10px;
@@ -318,22 +336,6 @@ export default {
     color: white;
   }
   
-  .acceptable {
-    border: 5px solid #5cadff; /* 保持原來的樣式 */
-    animation: blink-border 1s step-end infinite;
-  }
 
-
-  @keyframes blink-border {
-  0% {
-    border-color: #5cadff; /* 開始顏色 */
-  }
-  50% {
-    border-color: transparent; /* 中間變透明 (或換成其他顏色) */
-  }
-  100% {
-    border-color: #5cadff; /* 回到開始顏色 */
-  }
-}
 
 </style>

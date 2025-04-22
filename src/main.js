@@ -302,7 +302,7 @@ app.use(ViewUIPlus)
     let str = text.split("\n");
     let json = {props: {}}, section = "header", y = 0;
     for(let i = 0; i < str.length; i++) {
-      let lines = str[i];
+      let lines = str[i].replace("\r", "");
       if(lines == "BEEP#") {
         json.props.beep = 1;
         continue;
@@ -367,13 +367,11 @@ app.use(ViewUIPlus)
           console.warn(e);
           (e)
         }
-      
-      
       }
 
       y += app.config.globalProperties.$cellHeight;        
     }
-    // console.log(JSON.stringify(json));
+    // console.log(JSON.stringify(json, null, 2));
     return json;
   }
 
