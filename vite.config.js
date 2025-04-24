@@ -12,13 +12,15 @@ export default defineConfig({
     }
   },
   build: {
-      rollupOptions: {
-          output: {
-              entryFileNames: `assets/[name].js`,
-              chunkFileNames: `assets/[name].js`,
-              assetFileNames: `assets/[name].[ext]`
-          }
-      },
+    outDir: "/Users/jimc/Documents/git.io/jimc052.github.io/PSERVER_VUE3", // 'dist',
+    assetsDir: 'assets',
+    rollupOptions: {
+        output: {
+            entryFileNames: `assets/[name].js`,
+            chunkFileNames: `assets/[name].js`,
+            assetFileNames: `assets/[name].[ext]`
+        }
+    },
   },
   server: {
     host: '0.0.0.0',
